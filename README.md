@@ -62,7 +62,6 @@
 ```bash
 git clone https://github.com/fndhwpoff/baoyan-skill.git ~/.claude/skills/保研skill
 pip install -r ~/.claude/skills/保研skill/requirements.txt
-pip install markdown
 ```
 
 ---

@@ -12,4 +12,5 @@ pyyaml>=6.0
 # 可选：更好的终端输出
 rich>=13.0.0
 
-# 功能3：无需额外依赖（使用 Python 内置 http.server）
+# PDF/HTML生成
+markdown>=3.0
