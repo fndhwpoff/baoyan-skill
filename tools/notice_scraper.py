@@ -336,7 +336,7 @@ def print_summary(results, schools_config):
     all_schools = {s["short"]: s for s in schools_config.get("schools", [])}
 
     print(f"\n{'='*70}")
-    print("📢 通知汇总")
+    print("[通知汇总]")
     print(f"{'='*70}")
 
     total_notices = 0
@@ -347,16 +347,16 @@ def print_summary(results, schools_config):
         error = result.get("error")
         total_notices += count
 
-        status = "✅" if not error else "⚠️"
-        print(f"\n{status} {name} ({short}) — {count} 条通知")
+        status = "[OK]" if not error else "[FAIL]"
+        print(f"\n{status} {name} ({short}) — {count} notices")
         if error:
-            print(f"   错误: {error}")
+            print(f"   Error: {error}")
 
         for notice in result.get("notices", [])[:3]:
             keywords = ", ".join(notice.get("matched_keywords", []))
             kw_str = f" [{keywords}]" if keywords else ""
-            print(f"   📌 {notice['title'][:70]}{kw_str}")
-            print(f"      {notice['url']}")
+            print(f"   * {notice['title'][:70]}{kw_str}")
+            print(f"     {notice['url']}")
 
     print(f"\n{'='*70}")
     print(f"总计: {total_notices} 条通知，来自 {len(results)} 所学校")

@@ -9,8 +9,8 @@ schools:
     college: 机械与动力工程学院
     urls:
       home: "https://me.sjtu.edu.cn"
-      notice: "https://me.sjtu.edu.cn/xyxx/tzgg.html"
-      summer_camp: null   # 需每年确认具体URL
+      notice: "https://me.sjtu.edu.cn/YanJS/"        # 已验证：研究生教务办通知页
+      summer_camp: "https://me.sjtu.edu.cn/YanJS/mainnotice/7524.html"  # 2026夏令营
       pre_push: null
     encoding: utf-8
 
@@ -20,8 +20,8 @@ schools:
     college: 机械工程学院
     urls:
       home: "https://me.zju.edu.cn"
-      notice: "https://me.zju.edu.cn/tzgg/list.htm"
-      summer_camp: null
+      notice: "http://me.zju.edu.cn/mecn/"            # 已验证：机械学院中文网通知
+      summer_camp: "http://me.zju.edu.cn/mecn/2026/0601/c6202a3168458/page.htm"  # 2026夏令营
       pre_push: null
     encoding: utf-8
 
@@ -31,7 +31,7 @@ schools:
     college: 机械工程学院
     urls:
       home: "https://mec.xjtu.edu.cn"
-      notice: "https://mec.xjtu.edu.cn/tzgg.htm"
+      notice: "https://mec.xjtu.edu.cn/tzgg.htm"      # 需验证
       summer_camp: null
       pre_push: null
     encoding: utf-8
@@ -109,8 +109,8 @@ schools:
     college: 机械科学与工程学院
     urls:
       home: "https://mse.hust.edu.cn"
-      notice: "https://mse.hust.edu.cn/tzgg.htm"
-      summer_camp: null
+      notice: "https://mse.hust.edu.cn/tzgg.htm"      # 需验证
+      summer_camp: "https://mse.hust.edu.cn/info/1181/17280.htm"  # 2025夏令营参考
       pre_push: null
     encoding: utf-8
 
@@ -120,7 +120,7 @@ schools:
     college: 机械工程及自动化学院
     urls:
       home: "https://www.me.buaa.edu.cn"
-      notice: "https://www.me.buaa.edu.cn/tzgg.htm"
+      notice: "https://www.me.buaa.edu.cn/tzgg.htm"   # 需验证
       summer_camp: null
       pre_push: null
     encoding: utf-8

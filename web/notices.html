@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机械保研通知 — Dashboard</title>
+    <style>
+        :root {
+            --bg: #f5f6f8;
+            --card: #ffffff;
+            --text: #1a1a2e;
+            --text2: #6b7280;
+            --primary: #4f46e5;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08);
+            --radius: 10px;
+            --font: -apple-system, "Microsoft YaHei", sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4f46e5 100%);
+            color: white;
+            padding: 28px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header-left h1 { font-size: 1.6rem; font-weight: 700; }
+        .header-left p { opacity: 0.8; font-size: 0.85rem; margin-top: 4px; }
+        .header-right { display: flex; gap: 12px; align-items: center; }
+        .header-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        /* Main Container */
+        .container { max-width: 1320px; margin: 0 auto; padding: 24px; }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .stat-icon {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        .stat-icon.schools { background: #ede9fe; }
+        .stat-icon.notices { background: #dbeafe; }
+        .stat-icon.camp { background: #d1fae5; }
+        .stat-icon.pre { background: #fef3c7; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+        .stat-label { font-size: 0.8rem; color: var(--text2); }
+
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font);
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #4338ca; }
+        .btn-outline { background: var(--card); border: 2px solid var(--border); color: var(--text); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-sm { padding: 6px 14px; font-size: 0.8rem; }
+
+        .search-box {
+            flex: 1; min-width: 200px;
+            padding: 10px 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: var(--font);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box:focus { border-color: var(--primary); }
+
+        .filter-tags {
+            display: flex; gap: 8px; flex-wrap: wrap;
+        }
+        .filter-tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid var(--border);
+            background: var(--card);
+            transition: all 0.2s;
+        }
+        .filter-tag.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .filter-tag:hover { border-color: var(--primary); }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .status-dot.ok { background: var(--success); }
+        .status-dot.fail { background: var(--danger); }
+
+        /* Table */
+        .table-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: #f9fafb;
+            border-bottom: 2px solid var(--border);
+        }
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover { color: var(--primary); }
+        th .sort-arrow { font-size: 0.7rem; margin-left: 4px; }
+        td {
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8fafc; }
+
+        .school-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .school-tag.c9 { background: #ede9fe; color: #5b21b6; }
+        .school-tag.strong { background: #dbeafe; color: #1e40af; }
+
+        .notice-type {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .notice-type.summer { background: #d1fae5; color: #065f46; }
+        .notice-type.pre { background: #fef3c7; color: #92400e; }
+        .notice-type.other { background: #f3f4f6; color: #374151; }
+
+        .notice-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .notice-link:hover { text-decoration: underline; }
+
+        /* Loading */
+        .spinner {
+            display: inline-block;
+            width: 16px; height: 16px;
+            border: 2px solid var(--border);
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loading-overlay {
+            text-align: center;
+            padding: 40px;
+            color: var(--text2);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+        .empty-state h3 { color: var(--text); margin-bottom: 8px; }
+        .empty-state p { color: var(--text2); font-size: 0.9rem; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 20px; right: 20px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 14px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            font-size: 0.9rem;
+            font-weight: 600;
+            transform: translateX(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            border-left: 4px solid var(--primary);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { padding: 20px; }
+            .header-left h1 { font-size: 1.3rem; }
+            .container { padding: 12px; }
+            td, th { padding: 10px 12px; font-size: 0.8rem; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <h1>📡 机械保研通知聚合</h1>
+            <p>18 所机械强校夏令营 & 预推免通知 · 实时更新</p>
+        </div>
+        <div class="header-right">
+            <span class="header-badge" id="last-update">加载中...</span>
+            <button class="btn btn-outline" onclick="refreshNotices()" id="btn-refresh" style="color:white;border-color:rgba(255,255,255,0.3)">
+                <span id="refresh-icon">🔄</span> 刷新数据
+            </button>
+        </div>
+    </div>
+
+    <!-- Main -->
+    <div class="container">
+
+        <!-- Stats -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-icon schools">🏫</div>
+                <div><div class="stat-value" id="stat-schools">0</div><div class="stat-label">覆盖学校</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon notices">📋</div>
+                <div><div class="stat-value" id="stat-total">0</div><div class="stat-label">总通知数</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon camp">🏕️</div>
+                <div><div class="stat-value" id="stat-summer">0</div><div class="stat-label">夏令营</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon pre">📝</div>
+                <div><div class="stat-value" id="stat-pre">0</div><div class="stat-label">预推免/其他</div></div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <input type="text" class="search-box" placeholder="🔍 搜索学校/标题..." id="search-input" oninput="renderTable()">
+            <div class="filter-tags">
+                <span class="filter-tag active" data-filter="all" onclick="setFilter('all', this)">全部</span>
+                <span class="filter-tag" data-filter="summer" onclick="setFilter('summer', this)">🏕️ 夏令营</span>
+                <span class="filter-tag" data-filter="pre" onclick="setFilter('pre', this)">📝 预推免</span>
+                <span class="filter-tag" data-filter="C9" onclick="setFilter('C9', this)">⭐ C9</span>
+                <span class="filter-tag" data-filter="985" onclick="setFilter('985', this)">🔵 985</span>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container" id="table-container">
+            <div class="loading-overlay">
+                <div class="spinner"></div>
+                <p style="margin-top:12px">正在加载通知数据...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+<script>
+// ============ State ============
+let notices = [];
+let currentFilter = 'all';
+let sortKey = 'school';
+let sortAsc = true;
+
+// ============ Init ============
+document.addEventListener('DOMContentLoaded', loadNotices);
+
+async function loadNotices() {
+    try {
+        const resp = await fetch('/api/notices');
+        const data = await resp.json();
+        notices = transformData(data);
+        updateStats();
+        renderTable();
+        document.getElementById('last-update').textContent =
+            '更新于 ' + new Date(data.updated_at || Date.now()).toLocaleString('zh-CN');
+    } catch (e) {
+        document.getElementById('table-container').innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📭</div>
+                <h3>暂无通知数据</h3>
+                <p>请先在 Claude Code 中运行通知爬虫：<code>/保研 notice</code></p>
+                <button class="btn btn-primary" style="margin-top:16px" onclick="refreshNotices()">🔄 立即刷新</button>
+            </div>`;
+        document.getElementById('last-update').textContent = '无数据';
+    }
+}
+
+function transformData(data) {
+    const result = [];
+    const schools = data.schools || {};
+    for (const [short, schoolData] of Object.entries(schools)) {
+        const config = schoolData._config || {};
+        const schoolNotices = schoolData.notices || [];
+        for (const n of schoolNotices) {
+            // Guess type from keywords
+            let type = 'other';
+            const kw = (n.matched_keywords || []).join(' ').toLowerCase() + (n.title || '').toLowerCase();
+            if (/夏令营|暑期学校|summer camp/i.test(kw)) type = 'summer';
+            else if (/预推免|推免|免试/i.test(kw)) type = 'pre';
+
+            result.push({
+                school: config.name || short,
+                short: short,
+                level: config.level || '',
+                college: config.college || '',
+                title: n.title || '未知标题',
+                url: n.url || '#',
+                type: type,
+                keywords: n.matched_keywords || [],
+            });
+        }
+    }
+    return result;
+}
+
+function updateStats() {
+    document.getElementById('stat-schools').textContent = new Set(notices.map(n => n.short)).size;
+    document.getElementById('stat-total').textContent = notices.length;
+    document.getElementById('stat-summer').textContent = notices.filter(n => n.type === 'summer').length;
+    document.getElementById('stat-pre').textContent = notices.filter(n => n.type !== 'summer').length;
+}
+
+function setFilter(filter, el) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    renderTable();
+}
+
+function sortBy(key) {
+    if (sortKey === key) sortAsc = !sortAsc;
+    else { sortKey = key; sortAsc = true; }
+    renderTable();
+}
+
+function getFiltered() {
+    let filtered = [...notices];
+    const search = document.getElementById('search-input').value.toLowerCase();
+    if (search) {
+        filtered = filtered.filter(n =>
+            n.school.includes(search) || n.title.toLowerCase().includes(search) || n.short.includes(search));
+    }
+    if (currentFilter === 'summer') filtered = filtered.filter(n => n.type === 'summer');
+    else if (currentFilter === 'pre') filtered = filtered.filter(n => n.type !== 'summer');
+    else if (currentFilter === 'C9') filtered = filtered.filter(n => n.level === 'C9');
+    else if (currentFilter === '985') filtered = filtered.filter(n => n.level.includes('985'));
+
+    filtered.sort((a, b) => {
+        let va = a[sortKey] || '', vb = b[sortKey] || '';
+        if (typeof va === 'string') va = va.toLowerCase();
+        if (typeof vb === 'string') vb = vb.toLowerCase();
+        return va > vb ? (sortAsc ? 1 : -1) : va < vb ? (sortAsc ? -1 : 1) : 0;
+    });
+    return filtered;
+}
+
+function renderTable() {
+    const filtered = getFiltered();
+    if (filtered.length === 0) {
+        document.getElementById('table-container').innerHTML = `
+            <div class="empty-state">
+                <div class="icon">🔍</div>
+                <h3>没有匹配的通知</h3>
+                <p>尝试调整搜索条件或刷新数据</p>
+            </div>`;
+        return;
+    }
+
+    const levelTag = (l) => l === 'C9' ? 'c9' : 'strong';
+    const typeTag = (t) => t === 'summer' ? 'summer' : t === 'pre' ? 'pre' : 'other';
+    const typeLabel = (t) => t === 'summer' ? '夏令营' : t === 'pre' ? '预推免' : '其他';
+
+    let html = `<table>
+        <thead><tr>
+            <th onclick="sortBy('school')">学校 <span class="sort-arrow">${sortKey==='school' ? (sortAsc?'▲':'▼') : ''}</span></th>
+            <th onclick="sortBy('type')">类型 <span class="sort-arrow">${sortKey==='type' ? (sortAsc?'▲':'▼') : ''}</span></th>
+            <th>通知标题</th>
+            <th>学院</th>
+        </tr></thead><tbody>`;
+
+    for (const n of filtered) {
+        html += `<tr>
+            <td><span class="school-tag ${levelTag(n.level)}">${n.school}</span></td>
+            <td><span class="notice-type ${typeTag(n.type)}">${typeLabel(n.type)}</span></td>
+            <td><a class="notice-link" href="${n.url}" target="_blank">${n.title}</a></td>
+            <td style="font-size:0.82rem;color:var(--text2)">${n.college}</td>
+        </tr>`;
+    }
+    html += '</tbody></table>';
+    document.getElementById('table-container').innerHTML = html;
+}
+
+async function refreshNotices() {
+    const btn = document.getElementById('btn-refresh');
+    const icon = document.getElementById('refresh-icon');
+    btn.disabled = true;
+    icon.innerHTML = '<span class="spinner"></span>';
+    showToast('正在抓取最新通知...');
+
+    try {
+        const resp = await fetch('/api/notices/refresh', { method: 'POST' });
+        const data = await resp.json();
+        notices = transformData(data);
+        updateStats();
+        renderTable();
+        document.getElementById('last-update').textContent =
+            '更新于 ' + new Date().toLocaleString('zh-CN');
+        showToast('刷新成功！共 ' + notices.length + ' 条通知', 'success');
+    } catch (e) {
+        showToast('刷新失败，请稍后重试', 'error');
+    } finally {
+        btn.disabled = false;
+        icon.textContent = '🔄';
+    }
+}
+
+function showToast(msg, type = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast ' + type + ' show';
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
