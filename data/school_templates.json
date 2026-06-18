@@ -1,0 +1,85 @@
+{
+  "description": "各学校保研材料定制参数。根据目标学校特点，自动调整邮件语气、PS侧重点、推荐信风格。",
+  "schools": {
+    "清华": {
+      "name": "清华大学",
+      "style": {
+        "email_tone": "学术严谨型 — 强调理论基础和学术潜力，引用该系代表性论文。邮件应精简直接，不过分寒暄。",
+        "ps_focus": "理论基础+学术志向。强调数理功底和科研的系统性。择校理由应提及清华机械系的学术传统。",
+        "recommend_focus": "偏重学术深度和独立思考能力。"
+      },
+      "keywords": ["理论深度","学术传统","数理基础","系统性","严谨"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}。拜读了您关于{paper_topic}的研究后，深感贵系在{field}领域的深厚学术传统对我具有极大的吸引力，特此致信。"
+    },
+    "上交": {
+      "name": "上海交通大学",
+      "style": {
+        "email_tone": "产学研并重型 — 强调理论+工程能力，可提及产业应用前景。语气自信但不失礼貌。",
+        "ps_focus": "工程实践+前沿研究。强调交叉学科能力和动手能力。择校理由应提及上交的产业资源和国重实验室。",
+        "recommend_focus": "偏重工程创新和产学研结合能力。"
+      },
+      "keywords": ["产学研","交叉学科","工程实践","产业资源","国重实验室"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}。一直关注贵院在{field}方向的前沿研究，特别是您课题组在{topic}方面的工作让我印象深刻。冒昧致信，希望能有机会在您的指导下深造。"
+    },
+    "浙大": {
+      "name": "浙江大学",
+      "style": {
+        "email_tone": "务实创新型 — 强调工程落地能力和创新意识。可提及杭州的产业生态。",
+        "ps_focus": "创新实践+产业视野。强调解决实际问题的能力和对新技术的好奇心。",
+        "recommend_focus": "偏重创新思维和独立思考。"
+      },
+      "keywords": ["创新","产业生态","工程落地","国际化","务实"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}。了解到贵院在{field}方向的创新研究和产学研合作模式后，非常向往。希望能有机会加入您的团队，将理论研究与工程应用相结合。"
+    },
+    "华科": {
+      "name": "华中科技大学",
+      "style": {
+        "email_tone": "踏实稳健型 — 强调扎实的机械功底和工程实践。语气诚恳朴实。",
+        "ps_focus": "机械功底+制造实践。强调对传统机械学科的深入理解和数字化升级的思考。",
+        "recommend_focus": "偏重工程素养和实践能力。"
+      },
+      "keywords": ["踏实","机械功底","制造","数字化","工程实践"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}。一直钦佩贵院在机械工程领域的深厚积淀，特别是{field}方向的研究。希望能有机会在您的指导下继续深造。"
+    },
+    "哈工大": {
+      "name": "哈尔滨工业大学",
+      "style": {
+        "email_tone": "实干技术型 — 强调动手能力和系统工程思维。可提及航天/机器人等军工特色。",
+        "ps_focus": "机电结合+系统工程。强调跨学科整合能力和工程实践。",
+        "recommend_focus": "偏重动手能力和工程执行力。"
+      },
+      "keywords": ["机电","系统工程","动手能力","航天","国防"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}。贵院在{field}领域的突出成就和鲜明的工科特色一直是我向往的方向，希望能有机会加入您的团队。"
+    },
+    "北航": {
+      "name": "北京航空航天大学",
+      "style": {
+        "email_tone": "严谨技术型 — 强调力学基础和航空航天背景。语气正式利落。",
+        "ps_focus": "力学基础+航空制造。强调扎实的理论功底和精密制造意识。",
+        "recommend_focus": "偏重力科基础和严谨治学。"
+      },
+      "keywords": ["力学","航空","精密制造","理论功底","严谨"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}。贵院在航空航天制造领域的领先地位和严谨的学术传统令我非常向往，希望能有机会在您的指导下深造。"
+    },
+    "同济": {
+      "name": "同济大学",
+      "style": {
+        "email_tone": "工程应用型 — 强调机械与汽车/建筑的交叉。可提及上海产业优势。",
+        "ps_focus": "机械+交叉应用。强调跨学科思维和工程落地能力。",
+        "recommend_focus": "偏重实践能力和行业视野。"
+      },
+      "keywords": ["汽车","交叉","上海","工程应用","行业"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}。贵院在{field}方向的工程应用研究和我个人的实践经历高度契合，希望能有机会加入您的团队。"
+    },
+    "_default": {
+      "name": "默认",
+      "style": {
+        "email_tone": "标准学术型 — 礼貌、简洁、展示匹配度。",
+        "ps_focus": "综合展示学术能力、科研经历和未来规划。",
+        "recommend_focus": "综合展示学术能力和个人品质。"
+      },
+      "keywords": ["学术","科研","匹配","真诚","礼貌"],
+      "greeting_template": "尊敬的{advisor_name}老师：\n您好！我是{student_school}的{student_name}，对贵院{field}方向的研究非常感兴趣，希望能有机会在您的指导下攻读研究生。"
+    }
+  }
+}
