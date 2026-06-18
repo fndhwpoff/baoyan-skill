@@ -8,147 +8,122 @@
 :root{--bg:#f0f2f5;--card:#fff;--text:#1a1a2e;--t2:#6b7280;--p1:#4f46e5;--g1:#059669;--bdr:#e5e7eb;--r:14px;--sh:0 1px 3px rgba(0,0,0,0.05);--font:-apple-system,"Microsoft YaHei",sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);background:var(--bg);color:var(--text)}
-
 .navbar{background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);padding:0 24px;position:sticky;top:0;z-index:100;display:flex;align-items:center;height:56px}
 .nav-logo{font-weight:800;font-size:1.1rem;color:var(--p1);text-decoration:none}
 .nav-links{margin-left:auto;display:flex;gap:4px}
 .nav-links a{padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;color:var(--t2);transition:all 0.15s}
 .nav-links a:hover{background:#f3f4f6;color:var(--text)}
 .nav-links a.active{background:#ede9fe;color:var(--p1)}
-
 .header{background:linear-gradient(135deg,#1e1b4b,#4f46e5);color:#fff;padding:32px 24px;text-align:center}
-.header h1{font-size:1.6rem;font-weight:800}
-.header p{opacity:0.8;font-size:0.85rem;margin-top:4px}
-
+.header h1{font-size:1.6rem;font-weight:800}.header p{opacity:0.8;font-size:0.85rem;margin-top:4px}
 .container{max-width:1160px;margin:0 auto;padding:24px;display:grid;grid-template-columns:240px 1fr;gap:20px}
 .sidebar{position:sticky;top:76px}
 .cat-list{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
 .cat-item{padding:13px 18px;cursor:pointer;font-size:0.88rem;font-weight:600;border-left:3px solid transparent;display:flex;align-items:center;gap:8px;transition:all 0.15s}
-.cat-item:hover{background:#f8fafc}
-.cat-item.active{background:#ede9fe;border-left-color:var(--p1);color:var(--p1)}
+.cat-item:hover{background:#f8fafc}.cat-item.active{background:#ede9fe;border-left-color:var(--p1);color:var(--p1)}
 .cat-count{margin-left:auto;font-size:0.75rem;background:#f3f4f6;padding:2px 10px;border-radius:10px;color:var(--t2)}
 .cat-item.active .cat-count{background:var(--p1);color:#fff}
-.cat-item.all{font-weight:700}
 
+.toolbar-row{display:flex;gap:8px;margin-bottom:12px;align-items:center}
 .file-list{display:flex;flex-direction:column;gap:8px}
 .file-card{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:16px 20px;cursor:pointer;transition:all 0.2s;border-left:3px solid transparent;display:flex;justify-content:space-between;align-items:center}
-.file-card:hover{border-left-color:var(--p1);box-shadow:0 4px 16px rgba(0,0,0,0.08)}
-.file-card.active{border-left-color:var(--p1);background:#f8f7ff}
-.file-info .fn{font-weight:600;font-size:0.92rem}
-.file-info .fm{font-size:0.78rem;color:var(--t2);margin-top:2px}
+.file-card:hover{border-left-color:var(--p1);box-shadow:0 4px 16px rgba(0,0,0,0.08)}.file-card.active{border-left-color:var(--p1);background:#f8f7ff}
+.file-info .fn{font-weight:600;font-size:0.92rem}.file-info .fm{font-size:0.78rem;color:var(--t2);margin-top:2px}
 .file-actions{display:flex;gap:6px}
-.btn-sm{padding:6px 12px;border-radius:6px;border:1px solid var(--bdr);background:var(--card);cursor:pointer;font-size:0.75rem;font-weight:600;font-family:var(--font);transition:all 0.15s}
-.btn-sm:hover{background:#f3f4f6}
-.btn-sm.primary{background:var(--p1);color:#fff;border-color:var(--p1)}
-.btn-sm.primary:hover{background:#4338ca}
+.btn-sm{padding:6px 12px;border-radius:6px;border:1px solid var(--bdr);background:var(--card);cursor:pointer;font-size:0.75rem;font-weight:600;font-family:var(--font);transition:all 0.15s;text-decoration:none;color:var(--text)}
+.btn-sm:hover{background:#f3f4f6}.btn-sm.primary{background:var(--p1);color:#fff;border-color:var(--p1)}.btn-sm.primary:hover{background:#4338ca}
+.btn-sm.green{background:var(--g1);color:#fff;border-color:var(--g1)}.btn-sm.green:hover{background:#047857}
 
 .preview-panel{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);padding:32px;margin-top:20px;display:none}
-.preview-panel.show{display:block}
-.preview-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center}
+.preview-panel.show{display:block}.preview-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center}
 .preview-content{line-height:1.85;font-size:0.94rem}
 .preview-content h1,.preview-content h2,.preview-content h3{margin:1.2em 0 0.5em}
 .preview-content h1{font-size:1.5rem}.preview-content h2{font-size:1.25rem}.preview-content h3{font-size:1.1rem}
 .preview-content table{border-collapse:collapse;width:100%;margin:12px 0;font-size:0.88rem}
 .preview-content th,.preview-content td{border:1px solid var(--bdr);padding:8px 12px;text-align:left}
-.preview-content th{background:#f9fafb;font-weight:700}
-.preview-content code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:0.85rem}
-.preview-content strong{color:var(--text)}
+.preview-content th{background:#f9fafb;font-weight:700}.preview-content code{background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:0.85rem}
 .preview-content blockquote{border-left:3px solid var(--p1);padding:4px 16px;margin:12px 0;color:var(--t2);background:#f8f9fa;border-radius:0 8px 8px 0}
-
 .empty{text-align:center;padding:60px;color:var(--t2)}.empty .icon{font-size:3rem;margin-bottom:8px}
-
 @media(max-width:768px){.container{grid-template-columns:1fr}.sidebar{position:static}.cat-list{display:flex;flex-wrap:wrap}.cat-item{border-left:none;border-radius:8px;padding:8px 12px;font-size:0.8rem}}
-@media print{body{background:#fff}.sidebar,.navbar,.preview-toolbar,.file-list{display:none!important}.container{display:block;max-width:100%;padding:0}.preview-panel{box-shadow:none;padding:20px;display:block!important}}
+@media print{body{background:#fff}.sidebar,.navbar,.preview-toolbar,.file-list,.toolbar-row{display:none!important}.container{display:block;max-width:100%;padding:0}.preview-panel{box-shadow:none;padding:20px;display:block!important}}
 </style>
 </head>
 <body>
-
 <nav class="navbar">
-  <a href="index.html" class="nav-logo">&#x2699; 保研skill</a>
+  <a href="index.html" class="nav-logo">⚙ 保研skill</a>
   <div class="nav-links">
-    <a href="index.html">首页</a>
-    <a href="practice.html">面试练习</a>
-    <a href="notices.html">通知看板</a>
-    <a href="results.html" class="active">成果中心</a>
+    <a href="index.html">首页</a><a href="practice.html">面试练习</a><a href="notices.html">通知看板</a><a href="results.html" class="active">成果中心</a>
   </div>
 </nav>
-
-<div class="header">
-  <h1>成果中心</h1>
-  <p>所有生成文件 · 分类浏览 · 预览 · 打印PDF</p>
-</div>
-
+<div class="header"><h1>📂 成果中心</h1><p>所有生成文件 · 预览 · 网页版 · PDF · 一键复制</p></div>
 <div class="container">
-  <aside class="sidebar">
-    <div class="cat-list" id="cat-list"></div>
-  </aside>
+  <aside class="sidebar"><div class="cat-list" id="cat-list"></div></aside>
   <main>
-    <div id="file-area"><div class="empty"><div class="icon">&#x1F4C2;</div><p>加载中...</p></div></div>
+    <div class="toolbar-row">
+      <button class="btn-sm primary" onclick="generatePDFs()">🔄 生成全部网页版/PDF</button>
+      <span style="font-size:0.8rem;color:var(--t2)">点击后为所有文件生成可打印的网页版</span>
+    </div>
+    <div id="file-area"><div class="empty"><div class="icon">📂</div><p>加载中...</p></div></div>
     <div class="preview-panel" id="preview">
       <div class="preview-toolbar">
-        <button class="btn-sm" onclick="closePreview()">&#x2190; 返回列表</button>
-        <button class="btn-sm primary" onclick="copyContent()">&#x1F4CB; 复制</button>
-        <button class="btn-sm primary" onclick="printPDF()">&#x1F5A8; 打印 PDF</button>
+        <button class="btn-sm" onclick="closePreview()">← 返回</button>
+        <button class="btn-sm primary" onclick="copyContent()">📋 复制</button>
+        <button class="btn-sm green" onclick="openHTML()">🌐 网页版</button>
+        <button class="btn-sm primary" onclick="printPDF()">🖨 打印PDF</button>
         <span id="preview-title" style="margin-left:auto;font-size:0.85rem;color:var(--t2)"></span>
       </div>
       <div class="preview-content" id="preview-content"></div>
     </div>
   </main>
 </div>
-
 <script>
-const CATS={resume:{icon:'&#x1F4DD;',label:'简历翻译'},questions:{icon:'&#x1F3A4;',label:'面试问题'},ps:{icon:'&#x1F4C4;',label:'个人陈述'},email:{icon:'&#x2709;',label:'导师邮件'},recommend:{icon:'&#x1F4E8;',label:'推荐信'},exam:{icon:'&#x1F4D6;',label:'专业课复习'},compare:{icon:'&#x2696;',label:'Offer对比'}};
-let allFiles=[],currentCat='all',currentContent=null;
+const CATS={resume:{icon:'📝',label:'简历翻译'},questions:{icon:'🎤',label:'面试问题'},ps:{icon:'📄',label:'个人陈述'},email:{icon:'✉️',label:'导师邮件'},recommend:{icon:'📨',label:'推荐信'},exam:{icon:'📖',label:'专业课复习'},compare:{icon:'⚖️',label:'Offer对比'}};
+let allFiles=[],currentCat='all',currentContent=null,currentPath=null;
 
 async function init(){
-  try{
-    const r=await fetch('/api/results');const d=await r.json();allFiles=d.files||[];
-    renderCats();renderFiles();
-  }catch(e){document.getElementById('file-area').innerHTML='<div class="empty"><div class="icon">&#x1F6AB;</div><h3>服务未连接</h3><p>请先运行 /保研 serve</p></div>'}
+  try{const r=await fetch('/api/results?include_pdf=1');const d=await r.json();allFiles=d.files||[];renderCats();renderFiles()}catch(e){document.getElementById('file-area').innerHTML='<div class="empty"><div class="icon">🚫</div><h3>服务未连接</h3><p>请先运行 /保研 serve</p></div>'}
 }
 function renderCats(){
   const counts={};counts.all=allFiles.length;allFiles.forEach(f=>{counts[f.category]=(counts[f.category]||0)+1});
-  let h=`<div class="cat-item all active" onclick="selCat('all')">&#x1F3E0; 全部 <span class="cat-count">${counts.all||0}</span></div>`;
+  let h=`<div class="cat-item active" onclick="selCat('all')">🏠 全部 <span class="cat-count">${counts.all||0}</span></div>`;
   for(const[k,v]of Object.entries(CATS)){if(counts[k])h+=`<div class="cat-item" onclick="selCat('${k}')">${v.icon} ${v.label} <span class="cat-count">${counts[k]}</span></div>`}
   document.getElementById('cat-list').innerHTML=h;
 }
 function selCat(c){currentCat=c;document.querySelectorAll('.cat-item').forEach(e=>e.classList.remove('active'));document.querySelector(`.cat-item[onclick="selCat('${c}')"]`)?.classList.add('active');closePreview();renderFiles()}
 function renderFiles(){
   const files=currentCat==='all'?allFiles:allFiles.filter(f=>f.category===currentCat);
-  if(!files.length){document.getElementById('file-area').innerHTML='<div class="empty"><div class="icon">&#x1F4AD;</div><h3>暂无文件</h3><p>使用 /保研 命令生成内容后将出现在这里</p></div>';return}
+  if(!files.length){document.getElementById('file-area').innerHTML='<div class="empty"><div class="icon">💭</div><h3>暂无文件</h3><p>使用 /保研 命令生成内容后将出现在这里</p></div>';return}
   let h='<div class="file-list">';
-  files.forEach(f=>{const cat=CATS[f.category]||{icon:'&#x1F4CB;',label:f.category};const safe=f.path.replace(/\\/g,'/');const date=f.date?new Date(f.date).toLocaleDateString('zh-CN'):'';
+  files.forEach(f=>{const cat=CATS[f.category]||{icon:'📋',label:f.category};const safe=f.path.replace(/\\/g,'/');const date=f.date?new Date(f.date).toLocaleDateString('zh-CN'):'';const htmlPath=safe.replace(/\.md$/,'.html');
     h+=`<div class="file-card" data-path="${safe.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onclick="preview('${safe.replace(/'/g,"\\'")}')">
-      <div class="file-info"><div class="fn">${cat.icon} ${f.name}</div><div class="fm">${cat.label} · ${date} · ${f.size||''}</div></div>
+      <div class="file-info"><div class="fn">${cat.icon} ${f.name}</div><div class="fm">${cat.label} · ${date} · ${f.size||''}${f.pdf?' · ✅ 有PDF':''}</div></div>
       <div class="file-actions" onclick="event.stopPropagation()">
-        <button class="btn-sm" onclick="printFile('${safe.replace(/'/g,"\\'")}','${f.name.replace(/'/g,"\\'")}')">&#x1F5A8; PDF</button>
+        <a href="${htmlPath}" target="_blank" class="btn-sm" onclick="event.stopPropagation()">🌐 网页版</a>
+        <button class="btn-sm" onclick="event.stopPropagation();printFile('${safe.replace(/'/g,"\\'")}','${f.name.replace(/'/g,"\\'")}')">🖨 打印PDF</button>
       </div></div>`});
   h+='</div>';document.getElementById('file-area').innerHTML=h;
 }
 async function preview(path){
-  document.querySelectorAll('.file-card').forEach(e=>e.classList.remove('active'));
+  currentPath=path;document.querySelectorAll('.file-card').forEach(e=>e.classList.remove('active'));
   const card=document.querySelector(`.file-card[data-path="${path.replace(/"/g,'&quot;')}"]`);if(card)card.classList.add('active');
-  try{
-    const r=await fetch(`/api/results/content?path=${encodeURIComponent(path)}`);const d=await r.json();
-    currentContent=d.content;document.getElementById('preview-title').textContent=d.name||'';
-    document.getElementById('preview-content').innerHTML=md2html(d.content||'');
-    document.getElementById('preview').classList.add('show');document.getElementById('preview').scrollIntoView({behavior:'smooth'});
-  }catch(e){alert('加载失败: '+e.message)}
+  try{const r=await fetch(`/api/results/content?path=${encodeURIComponent(path)}`);const d=await r.json();currentContent=d.content;document.getElementById('preview-title').textContent=d.name||'';document.getElementById('preview-content').innerHTML=md2html(d.content||'');document.getElementById('preview').classList.add('show');document.getElementById('preview').scrollIntoView({behavior:'smooth'})}catch(e){alert('加载失败: '+e.message)}
 }
-function closePreview(){document.getElementById('preview').classList.remove('show');document.querySelectorAll('.file-card').forEach(e=>e.classList.remove('active'));currentContent=null}
-function copyContent(){if(!currentContent)return;navigator.clipboard.writeText(currentContent).then(()=>{const b=document.querySelector('.preview-toolbar .btn-sm.primary');b.textContent='&#x2705; 已复制';setTimeout(()=>b.textContent='&#x1F4CB; 复制',2000)})}
-function printPDF(){if(!currentContent)return;const w=window.open('','_blank','width=800,height=600');w.document.write(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${document.getElementById('preview-title').textContent||'Document'}</title><style>body{font-family:"Microsoft YaHei",sans-serif;line-height:1.8;max-width:750px;margin:40px auto;padding:20px;color:#1a1a2e}h1{font-size:1.5rem}h2{font-size:1.25rem}h3{font-size:1.1rem}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ddd;padding:8px 12px;text-align:left}th{background:#f5f5f5}code{background:#f0f0f0;padding:2px 6px;border-radius:4px}strong{color:#333}@media print{body{margin:0;padding:15px}}</style></head><body>${md2html(currentContent)}</body></html>`);w.document.close();setTimeout(()=>w.print(),500)}
-function printFile(path,name){fetch(`/api/results/content?path=${encodeURIComponent(path)}`).then(r=>r.json()).then(d=>{const w=window.open('','_blank');w.document.write(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${name}</title><style>body{font-family:"Microsoft YaHei",sans-serif;line-height:1.8;max-width:750px;margin:40px auto;padding:20px;color:#1a1a2e}h1{font-size:1.5rem}h2{font-size:1.25rem}h3{font-size:1.1rem}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ddd;padding:8px 12px;text-align:left}th{background:#f5f5f5}code{background:#f0f0f0;padding:2px 6px;border-radius:4px}@media print{body{margin:0;padding:15px}}</style></head><body>${md2html(d.content||'')}</body></html>`);w.document.close();setTimeout(()=>w.print(),500)}).catch(e=>alert('加载失败'))}
+function closePreview(){document.getElementById('preview').classList.remove('show');document.querySelectorAll('.file-card').forEach(e=>e.classList.remove('active'));currentContent=null;currentPath=null}
+function copyContent(){if(!currentContent)return;navigator.clipboard.writeText(currentContent).then(()=>{const b=document.querySelector('.preview-toolbar .btn-sm.primary');b.textContent='✅ 已复制';setTimeout(()=>b.textContent='📋 复制',2000)})}
+function openHTML(){if(!currentPath)return;const hp=currentPath.replace(/\.md$/,'.html');window.open(hp,'_blank')}
+function printPDF(){if(!currentContent)return;const w=window.open('','_blank','width=800,height=600');w.document.write(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${document.getElementById('preview-title').textContent||'Doc'}</title><style>body{font-family:"Microsoft YaHei",sans-serif;line-height:1.8;max-width:750px;margin:40px auto;padding:20px;color:#1a1a2e}h1{font-size:1.5rem}h2{font-size:1.25rem}h3{font-size:1.1rem}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ddd;padding:8px 12px}th{background:#f5f5f5}code{background:#f0f0f0;padding:2px 6px;border-radius:4px}@media print{body{margin:0;padding:15px}}</style></head><body>${md2html(currentContent)}</body></html>`);w.document.close();setTimeout(()=>w.print(),500)}
+function printFile(path,name){fetch(`/api/results/content?path=${encodeURIComponent(path)}`).then(r=>r.json()).then(d=>{const w=window.open('','_blank');w.document.write(`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>${name}</title><style>body{font-family:"Microsoft YaHei",sans-serif;line-height:1.8;max-width:750px;margin:40px auto;padding:20px;color:#1a1a2e}h1{font-size:1.5rem}h2{font-size:1.25rem}h3{font-size:1.1rem}table{border-collapse:collapse;width:100%;margin:12px 0}th,td{border:1px solid #ddd;padding:8px 12px}th{background:#f5f5f5}code{background:#f0f0f0;padding:2px 6px;border-radius:4px}@media print{body{margin:0;padding:15px}}</style></head><body>${md2html(d.content||'')}</body></html>`);w.document.close();setTimeout(()=>w.print(),500)}).catch(e=>alert('加载失败'))}
+async function generatePDFs(){
+  const btn=document.querySelector('.toolbar-row .btn-sm');btn.textContent='⏳ 生成中...';btn.disabled=true;
+  try{const r=await fetch('/api/results/generate-pdf',{method:'POST'});const d=await r.json();alert(d.ok?'生成成功！刷新页面查看。':'生成失败: '+(d.errors||d.error))}catch(e){alert('请求失败')}
+  btn.textContent='🔄 生成全部网页版/PDF';btn.disabled=false;setTimeout(()=>location.reload(),1000);
+}
 function md2html(t){
   let h=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   h=h.replace(/^### (.+)$/gm,'<h3>$1</h3>');h=h.replace(/^## (.+)$/gm,'<h2>$1</h2>');h=h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
-  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');
-  h=h.replace(/`([^`]+)`/g,'<code>$1</code>');
-  h=h.replace(/^---$/gm,'<hr>');
-  // Tables
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');h=h.replace(/`([^`]+)`/g,'<code>$1</code>');h=h.replace(/^---$/gm,'<hr>');
   h=h.replace(/(\|.+\|\n)+/g,m=>{let rows=m.trim().split('\n');if(rows.length<2)return m;let html='<table>';rows.forEach((row,i)=>{if(i===1&&/^[\|\s\-:]+$/.test(row))return;let cells=row.split('|').filter(c=>c.trim());let tag=i===0?'th':'td';html+='<tr>'+cells.map(c=>`<${tag}>${c.trim()}</${tag}>`).join('')+'</tr>'});html+='</table>';return html});
-  h=h.replace(/\n\n/g,'</p><p>');h=h.replace(/\n/g,'<br>');h='<p>'+h+'</p>';h=h.replace(/<p><\/p>/g,'');h=h.replace(/<p><br><\/p>/g,'');
-  return h;
+  h=h.replace(/\n\n/g,'</p><p>');h=h.replace(/\n/g,'<br>');h='<p>'+h+'</p>';h=h.replace(/<p><\/p>/g,'');h=h.replace(/<p><br><\/p>/g,'');return h;
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
