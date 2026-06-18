@@ -78,27 +78,44 @@ body{font-family:var(--font);background:var(--bg);color:var(--text)}
 </div>
 <script>
 const CATS={resume:{icon:'📝',label:'简历翻译'},questions:{icon:'🎤',label:'面试问题'},ps:{icon:'📄',label:'个人陈述'},email:{icon:'✉️',label:'导师邮件'},recommend:{icon:'📨',label:'推荐信'},exam:{icon:'📖',label:'专业课复习'},compare:{icon:'⚖️',label:'Offer对比'}};
-let allFiles=[],currentCat='all',currentContent=null,currentPath=null;
+let allFiles=[],schoolData={},currentView='category',currentKey='all',currentContent=null,currentPath=null;
 
 async function init(){
-  try{const r=await fetch('/api/results?include_pdf=1');const d=await r.json();allFiles=d.files||[];renderCats();renderFiles()}catch(e){document.getElementById('file-area').innerHTML='<div class="empty"><div class="icon">🚫</div><h3>服务未连接</h3><p>请先运行 /保研 serve</p></div>'}
+  try{const r=await fetch('/api/results?include_pdf=1');const d=await r.json();allFiles=d.files||[];schoolData=d.schools||{};renderSidebar();renderFiles()}catch(e){document.getElementById('file-area').innerHTML='<div class="empty"><div class="icon">🚫</div><h3>服务未连接</h3><p>请先运行 /保研 serve</p></div>'}
 }
-function renderCats(){
+function renderSidebar(){
   const counts={};counts.all=allFiles.length;allFiles.forEach(f=>{counts[f.category]=(counts[f.category]||0)+1});
-  let h=`<div class="cat-item active" onclick="selCat('all')">🏠 全部 <span class="cat-count">${counts.all||0}</span></div>`;
-  for(const[k,v]of Object.entries(CATS)){if(counts[k])h+=`<div class="cat-item" onclick="selCat('${k}')">${v.icon} ${v.label} <span class="cat-count">${counts[k]}</span></div>`}
+  let h=`<div style="display:flex;gap:4px;margin-bottom:8px">
+    <button class="btn-sm ${currentView==='category'?'primary':''}" onclick="switchView('category')">📁 按类型</button>
+    <button class="btn-sm ${currentView==='school'?'primary':''}" onclick="switchView('school')">🏫 按学校</button></div>`;
+  if(currentView==='category'){
+    h+=`<div class="cat-item active" onclick="selKey('all')">🏠 全部 <span class="cat-count">${counts.all||0}</span></div>`;
+    for(const[k,v]of Object.entries(CATS)){if(counts[k])h+=`<div class="cat-item" onclick="selKey('${k}')">${v.icon} ${v.label} <span class="cat-count">${counts[k]}</span></div>`}
+  }else{
+    h+=`<div class="cat-item active" onclick="selKey('all')">🏠 全部 <span class="cat-count">${allFiles.length}</span></div>`;
+    for(const[sn,info]of Object.entries(schoolData)){
+      h+=`<div class="cat-item" onclick="selKey('${sn}')">🏫 ${sn} <span class="cat-count">${info.count}</span></div>`;
+    }
+    if(Object.keys(schoolData).length===0) h+='<p style="padding:12px;font-size:0.8rem;color:var(--t2)">暂无学校分类数据</p>';
+  }
   document.getElementById('cat-list').innerHTML=h;
 }
-function selCat(c){currentCat=c;document.querySelectorAll('.cat-item').forEach(e=>e.classList.remove('active'));document.querySelector(`.cat-item[onclick="selCat('${c}')"]`)?.classList.add('active');closePreview();renderFiles()}
+function switchView(v){currentView=v;currentKey='all';closePreview();renderSidebar();renderFiles()}
+function selKey(k){currentKey=k;document.querySelectorAll('.cat-item').forEach(e=>e.classList.remove('active'));document.querySelector(`.cat-item[onclick="selKey('${k}')"]`)?.classList.add('active');closePreview();renderFiles()}
 function renderFiles(){
-  const files=currentCat==='all'?allFiles:allFiles.filter(f=>f.category===currentCat);
+  let files=allFiles;
+  if(currentKey!=='all'){
+    if(currentView==='category') files=allFiles.filter(f=>f.category===currentKey);
+    else files=allFiles.filter(f=>f.school===currentKey);
+  }
   if(!files.length){document.getElementById('file-area').innerHTML='<div class="empty"><div class="icon">💭</div><h3>暂无文件</h3><p>使用 /保研 命令生成内容后将出现在这里</p></div>';return}
   let h='<div class="file-list">';
   files.forEach(f=>{const cat=CATS[f.category]||{icon:'📋',label:f.category};const safe=f.path.replace(/\\/g,'/');const date=f.date?new Date(f.date).toLocaleDateString('zh-CN'):'';const htmlPath=safe.replace(/\.md$/,'.html');
+    const schoolTag=f.school?`<span style="background:#fef3c7;color:#92400e;padding:1px 8px;border-radius:8px;font-size:0.7rem;font-weight:700;margin-left:6px">🏫 ${f.school}</span>`:'';
     h+=`<div class="file-card" data-path="${safe.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onclick="preview('${safe.replace(/'/g,"\\'")}')">
-      <div class="file-info"><div class="fn">${cat.icon} ${f.name}</div><div class="fm">${cat.label} · ${date} · ${f.size||''}${f.pdf?' · ✅ 有PDF':''}</div></div>
+      <div class="file-info"><div class="fn">${cat.icon} ${f.name}${schoolTag}</div><div class="fm">${cat.label} · ${date} · ${f.size||''}${f.html?' · ✅ 网页版可用':''}</div></div>
       <div class="file-actions" onclick="event.stopPropagation()">
-        <a href="${htmlPath}" target="_blank" class="btn-sm" onclick="event.stopPropagation()">🌐 网页版</a>
+        ${f.html?`<a href="${f.html}" target="_blank" class="btn-sm green" onclick="event.stopPropagation()">🌐 网页版</a>`:''}
         <button class="btn-sm" onclick="event.stopPropagation();printFile('${safe.replace(/'/g,"\\'")}','${f.name.replace(/'/g,"\\'")}')">🖨 打印PDF</button>
       </div></div>`});
   h+='</div>';document.getElementById('file-area').innerHTML=h;

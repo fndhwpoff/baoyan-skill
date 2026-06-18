@@ -42,8 +42,8 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         p = urlparse(self.path)
-        # PDF files
-        if p.path.startswith("/output/") and p.path.endswith(".pdf"):
+        # Serve PDF and HTML files from output/
+        if p.path.startswith("/output/") and (p.path.endswith(".pdf") or p.path.endswith(".html")):
             self.serve_file(p.path)
             return
         routes = {
@@ -88,8 +88,9 @@ class Handler(SimpleHTTPRequestHandler):
         fp = SKILL_DIR / path.lstrip("/")
         if not fp.exists():
             self.send_error(404); return
+        ct = "text/html" if fp.suffix == ".html" else "application/pdf"
         self.send_response(200)
-        self.send_header("Content-Type", "application/pdf")
+        self.send_header("Content-Type", ct)
         self.send_header("Content-Length", str(fp.stat().st_size))
         self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
@@ -103,6 +104,13 @@ class Handler(SimpleHTTPRequestHandler):
             if parsed:
                 qs = parse_qs(parsed.query)
                 include_pdf = qs.get("include_pdf", ["0"])[0] == "1"
+            # Load school shorts for filename matching
+            school_shorts = []
+            if SCHOOLS_CONFIG.exists():
+                import yaml
+                with open(SCHOOLS_CONFIG,"r",encoding="utf-8") as f:
+                    school_shorts = [s["short"] for s in yaml.safe_load(f).get("schools",[])]
+            school_names = {s:s for s in school_shorts}
             files = []
             cats = {"resume":"resume","questions":"questions","ps":"ps","email":"email","recommend":"recommend","exam":"exam","compare":"compare"}
             for ck, cd in cats.items():
@@ -112,15 +120,31 @@ class Handler(SimpleHTTPRequestHandler):
                     if f.suffix in (".md",".txt") and f.name != ".gitkeep":
                         s = f.stat()
                         rel = str(f.relative_to(SKILL_DIR)).replace("\\","/")
-                        entry = {"name":f.name,"path":rel,"category":ck,"date":datetime.fromtimestamp(s.st_mtime).isoformat(),"size":f"{s.st_size//1024} KB"}
-                        # Check for PDF
-                        pdf_path = f.with_suffix(".pdf")
-                        if pdf_path.exists():
-                            entry["pdf"] = str(pdf_path.relative_to(SKILL_DIR)).replace("\\","/")
+                        # Extract school from filename
+                        school = None
+                        for sn in school_shorts:
+                            if f"_{sn}" in f.stem or f.stem.startswith(f"{sn}_"):
+                                school = sn; break
+                        entry = {"name":f.name,"path":rel,"category":ck,"school":school,"date":datetime.fromtimestamp(s.st_mtime).isoformat(),"size":f"{s.st_size//1024} KB"}
+                        # Check for HTML and PDF
+                        if f.with_suffix(".html").exists():
+                            entry["html"] = str(f.with_suffix(".html").relative_to(SKILL_DIR)).replace("\\","/")
+                        if f.with_suffix(".pdf").exists():
+                            entry["pdf"] = str(f.with_suffix(".pdf").relative_to(SKILL_DIR)).replace("\\","/")
                         files.append(entry)
-            self.json({"files":files,"total":len(files)})
+            # Build school summary
+            schools = {}
+            for f in files:
+                if f["school"]:
+                    sn = f["school"]
+                    if sn not in schools: schools[sn] = {"count":0,"categories":set()}
+                    schools[sn]["count"] += 1
+                    schools[sn]["categories"].add(f["category"])
+            for sn in schools:
+                schools[sn]["categories"] = sorted(schools[sn]["categories"])
+            self.json({"files":files,"total":len(files),"schools":schools})
         except Exception as e:
-            self.json({"error":str(e),"files":[]},500)
+            self.json({"error":str(e),"files":[],"schools":{}},500)
 
     def serve_results_content(self, parsed):
         try:
