@@ -230,7 +230,6 @@ const App = (() => {
         $("#btn-stop-recording")?.addEventListener("click", handleStopRecording);
         $("#btn-skip")?.addEventListener("click", handleSkip);
         $("#btn-next-after")?.addEventListener("click", handleNextQuestion);
-        $("#btn-feedback")?.addEventListener("click", handleRequestFeedback);
 
         // 完成页
         $("#btn-restart")?.addEventListener("click", handleRestart);
@@ -343,12 +342,6 @@ const App = (() => {
         $("#btn-next-after").classList.add("hidden");
         $("#btn-feedback")?.classList.add("hidden");
         $("#recording-indicator").classList.add("hidden");
-        $("#feedback-panel")?.classList.add("hidden");
-        $("#feedback-loading")?.classList.remove("hidden");
-        $("#feedback-result")?.classList.add("hidden");
-        $("#feedback-error")?.classList.add("hidden");
-        if (feedbackPollTimer) { clearInterval(feedbackPollTimer); feedbackPollTimer = null; }
-        feedbackSessionId = null;
 
         // 隐藏回放
         $("#video-practice-preview").classList.remove("hidden");
@@ -454,9 +447,6 @@ const App = (() => {
     }
 
     // ========== 处理：停止录制 ==========
-    let feedbackSessionId = null;
-    let feedbackPollTimer = null;
-
     async function handleStopRecording() {
         clearTimer();
         try {
@@ -472,91 +462,8 @@ const App = (() => {
                 $("#video-practice-playback").classList.remove("hidden");
             }
             markCompleted(currentQuestionIndex);
-            // 自动提交反馈
-            autoSubmitFeedback();
         } catch (err) {
             console.error("[App] 停止录制失败:", err);
-        }
-    }
-
-    async function autoSubmitFeedback() {
-        const q = questions[currentQuestionIndex];
-        if (!q) return;
-        let transcript = Camera.getTranscript ? (Camera.getTranscript() || "") : "";
-        if (!transcript) return; // 无转写则跳过
-        try {
-            const resp = await fetch("/api/feedback", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question: q.question, transcript, category: q.category || "general" }),
-            });
-            const data = await resp.json();
-            feedbackSessionId = data.session_id;
-            // 显示反馈面板（加载状态）
-            const panel = $("#feedback-panel");
-            if (panel) {
-                panel.classList.remove("hidden");
-                $("#feedback-loading")?.classList.remove("hidden");
-                $("#feedback-result")?.classList.add("hidden");
-                $("#feedback-error")?.classList.add("hidden");
-                const sidEl = $("#feedback-sid");
-                if (sidEl) sidEl.textContent = feedbackSessionId || "-";
-            }
-            // 开始轮询
-            startFeedbackPolling();
-        } catch (e) {
-            console.error("[App] 反馈提交失败:", e);
-        }
-    }
-
-    function startFeedbackPolling() {
-        if (feedbackPollTimer) clearInterval(feedbackPollTimer);
-        let attempts = 0;
-        feedbackPollTimer = setInterval(async () => {
-            if (!feedbackSessionId) { clearInterval(feedbackPollTimer); return; }
-            try {
-                const resp = await fetch(`/api/feedback/check?session=${feedbackSessionId}`);
-                const data = await resp.json();
-                if (data.status === "done" && data.feedback) {
-                    clearInterval(feedbackPollTimer);
-                    showFeedbackResult(data.feedback);
-                } else if (attempts > 60) { // 2分钟超时
-                    clearInterval(feedbackPollTimer);
-                    $("#feedback-loading")?.classList.add("hidden");
-                    $("#feedback-error")?.classList.remove("hidden");
-                }
-                attempts++;
-            } catch (e) { /* ignore */ }
-        }, 2000);
-    }
-
-    function showFeedbackResult(fb) {
-        $("#feedback-loading")?.classList.add("hidden");
-        $("#feedback-error")?.classList.add("hidden");
-        $("#feedback-result")?.classList.remove("hidden");
-        const scoresEl = $("#feedback-scores");
-        if (scoresEl && fb.scores) {
-            const scoreBar = (label, score) => {
-                const pct = Math.min(100, Math.max(0, (score/10)*100));
-                const color = score >= 8 ? 'var(--success)' : score >= 6 ? 'var(--warning)' : 'var(--danger)';
-                return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0">
-                    <span style="width:80px;font-size:0.85rem;font-weight:600">${label}</span>
-                    <div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden">
-                        <div style="width:${pct}%;height:100%;background:${color};border-radius:4px;transition:width 0.8s ease"></div></div>
-                    <span style="font-weight:700;min-width:24px;text-align:right">${score}</span></div>`;
-            };
-            scoresEl.innerHTML = scoreBar(t("feedbackContent"), fb.scores.content || 0)
-                + scoreBar(t("feedbackFluency"), fb.scores.fluency || 0)
-                + scoreBar(t("feedbackLogic"), fb.scores.logic || 0)
-                + `<div style="text-align:center;margin-top:10px;font-size:1.2rem;font-weight:800">
-                    ${t("feedbackOverall")}: ${fb.overall || '?'} / 10</div>`;
-        }
-        const suggEl = $("#feedback-suggestions");
-        if (suggEl) {
-            let html = '';
-            if (fb.strengths && fb.strengths.length) html += '<p><strong>亮点：</strong>' + fb.strengths.map(s => s).join('；') + '</p>';
-            if (fb.suggestions && fb.suggestions.length) html += '<p><strong>改进建议：</strong></p><ul>' + fb.suggestions.map(s => '<li>' + s + '</li>').join('') + '</ul>';
-            suggEl.innerHTML = html;
         }
     }
 
@@ -598,12 +505,6 @@ const App = (() => {
 
         $("#completed-count").textContent = completedQuestions.length;
         $("#btn-feedback")?.classList.add("hidden");
-        $("#feedback-panel")?.classList.add("hidden");
-        $("#feedback-loading")?.classList.remove("hidden");
-        $("#feedback-result")?.classList.add("hidden");
-        $("#feedback-error")?.classList.add("hidden");
-        if (feedbackPollTimer) { clearInterval(feedbackPollTimer); feedbackPollTimer = null; }
-        feedbackSessionId = null;
 
         const stats = $("#complete-stats");
         stats.innerHTML = `
