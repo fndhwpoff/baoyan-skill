@@ -3,215 +3,162 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>保研skill — 机械工程保研全流程助手</title>
+<title>保研skill v3.0 — 机械工程保研全流程助手</title>
 <style>
-:root {
-  --bg:#f0f2f5; --card:#fff; --text:#1a1a2e; --t2:#6b7280;
-  --p1:#4f46e5; --p2:#7c3aed; --g1:#059669; --g2:#0891b2;
-  --o1:#ea580c; --o2:#d97706; --r1:#dc2626;
-  --bdr:#e5e7eb; --r:16px; --sh:0 1px 3px rgba(0,0,0,0.05);
-  --font:-apple-system,"Microsoft YaHei",sans-serif;
-}
+:root{--bg:#f0f2f5;--card:#fff;--text:#1a1a2e;--t2:#6b7280;--p1:#4f46e5;--p2:#7c3aed;--g1:#059669;--g2:#0891b2;--o1:#ea580c;--bdr:#e5e7eb;--r:18px;--sh:0 1px 3px rgba(0,0,0,0.05);--font:-apple-system,"Microsoft YaHei",sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:var(--font);background:var(--bg);color:var(--text)}
 
-/* Nav */
-.navbar{
-  background:rgba(255,255,255,0.85); backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--bdr); padding:0 24px;
-  position:sticky; top:0; z-index:100; display:flex; align-items:center; height:56px;
-}
-.nav-logo{font-weight:800;font-size:1.1rem;color:var(--p1);text-decoration:none;display:flex;align-items:center;gap:8px}
+.navbar{background:rgba(255,255,255,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);padding:0 28px;position:sticky;top:0;z-index:100;display:flex;align-items:center;height:60px}
+.nav-logo{font-weight:900;font-size:1.2rem;color:var(--p1);text-decoration:none;display:flex;align-items:center;gap:8px}
+.nav-logo span{background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;padding:3px 10px;border-radius:6px;font-size:0.7rem;font-weight:800;letter-spacing:1px}
 .nav-links{margin-left:auto;display:flex;gap:4px}
-.nav-links a{
-  padding:8px 16px;border-radius:8px;text-decoration:none;font-size:0.85rem;font-weight:600;
-  color:var(--t2);transition:all 0.15s;
-}
+.nav-links a{padding:10px 18px;border-radius:10px;text-decoration:none;font-size:0.88rem;font-weight:600;color:var(--t2);transition:all 0.2s}
 .nav-links a:hover{background:#f3f4f6;color:var(--text)}
-.nav-links a.active{background:#ede9fe;color:var(--p1)}
+.nav-links a.cta{background:var(--p1);color:#fff}
+.nav-links a.cta:hover{background:#4338ca}
 
-/* Hero */
-.hero{
-  background:linear-gradient(160deg,#0c0830 0%,#1a1550 30%,#252080 55%,#3b30c0 100%);
-  color:#fff;padding:80px 24px 100px;text-align:center;position:relative;overflow:hidden;
-}
-.hero::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at 20% 50%,rgba(120,100,255,0.12) 0%,transparent 60%),
-             radial-gradient(ellipse at 80% 30%,rgba(80,200,200,0.08) 0%,transparent 50%),
-             radial-gradient(ellipse at 50% 80%,rgba(255,150,50,0.06) 0%,transparent 50%);
-}
+.hero{background:linear-gradient(160deg,#0a0825 0%,#151040 30%,#1e1860 55%,#2d2090 100%);color:#fff;padding:100px 24px 120px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 25% 40%,rgba(100,80,255,0.15) 0%,transparent 55%),radial-gradient(ellipse at 70% 25%,rgba(60,200,180,0.1) 0%,transparent 50%),radial-gradient(ellipse at 55% 70%,rgba(255,140,40,0.08) 0%,transparent 55%)}
 .hero>*{position:relative;z-index:1}
-.hero-badge{
-  display:inline-block;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);
-  padding:6px 22px;border-radius:20px;font-size:0.8rem;margin-bottom:24px;letter-spacing:3px;
-  backdrop-filter:blur(4px);
-}
-.hero h1{font-size:3rem;font-weight:900;margin-bottom:16px;letter-spacing:-1.5px;line-height:1.2}
-.hero p{font-size:1.15rem;opacity:0.8;line-height:1.8;max-width:650px;margin:0 auto 36px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:8px 24px;border-radius:24px;font-size:0.8rem;margin-bottom:28px;letter-spacing:3px;backdrop-filter:blur(8px)}
+.hero-badge .dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero h1{font-size:3.4rem;font-weight:900;margin-bottom:20px;letter-spacing:-2px;line-height:1.15}
+.hero h1 span{background:linear-gradient(135deg,#c4b5fd,#67e8f9,#a5f3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.2rem;opacity:0.8;line-height:1.8;max-width:680px;margin:0 auto 40px}
 .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-.btn{
-  display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:10px;
-  font-size:0.95rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;
-  font-family:var(--font);border:none;
-}
-.btn-primary{background:#fff;color:var(--p1)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.2)}
-.btn-ghost{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
-.btn-ghost:hover{background:rgba(255,255,255,0.18)}
-.hero-stats{display:flex;gap:40px;justify-content:center;margin-top:48px;flex-wrap:wrap}
-.hs-num{font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hs-lbl{font-size:0.82rem;opacity:0.65;margin-top:4px}
+.btn{padding:14px 32px;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.25s;font-family:var(--font);border:none;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:#fff;color:var(--p1);box-shadow:0 4px 24px rgba(0,0,0,0.15)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(255,255,255,0.25)}
+.btn-ghost{background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.18)}
+.btn-ghost:hover{background:rgba(255,255,255,0.15);transform:translateY(-2px)}
+.hero-stats{display:flex;gap:48px;justify-content:center;margin-top:56px;flex-wrap:wrap}
+.hs-item{text-align:center}
+.hs-num{font-size:2.8rem;font-weight:900;background:linear-gradient(135deg,#c4b5fd,#67e8f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.hs-lbl{font-size:0.85rem;opacity:0.6;margin-top:6px;letter-spacing:1px}
 
-/* Sections */
-.container{max-width:1120px;margin:0 auto;padding:0 24px}
-.section{margin:64px 0}
+.container{max-width:1140px;margin:-50px auto 0;padding:0 24px 60px;position:relative;z-index:2}
+
+.section{margin:56px 0}
 .section-head{text-align:center;margin-bottom:32px}
-.section-head h2{font-size:1.6rem;font-weight:800;letter-spacing:-0.5px}
-.section-head p{color:var(--t2);font-size:0.9rem;margin-top:6px}
+.section-head h2{font-size:1.7rem;font-weight:800;letter-spacing:-0.5px}
+.section-head p{color:var(--t2);font-size:0.95rem;margin-top:6px}
 
-/* Feature Grid */
-.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
-.fcard{
-  background:var(--card);border-radius:var(--r);padding:30px;
-  box-shadow:var(--sh);border:1px solid var(--bdr);transition:all 0.25s;
-  display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden;
-}
-.fcard:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.08)}
-.fcard::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.fcard{background:var(--card);border-radius:var(--r);padding:32px 24px;box-shadow:var(--sh);border:1px solid var(--bdr);transition:all 0.3s;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.fcard:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,0.1)}
+.fcard::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px}
 .fcard.c0::before{background:linear-gradient(90deg,var(--p1),var(--p2))}
 .fcard.c1::before{background:linear-gradient(90deg,var(--g1),var(--g2))}
-.fcard.c2::before{background:linear-gradient(90deg,var(--o1),var(--o2))}
+.fcard.c2::before{background:linear-gradient(90deg,var(--o1),#f59e0b)}
 .fcard.c3::before{background:linear-gradient(90deg,var(--p2),#a78bfa)}
 .fcard.c4::before{background:linear-gradient(90deg,var(--g2),#22d3ee)}
-.fcard.c5::before{background:linear-gradient(90deg,var(--o2),#fbbf24)}
-.fi{font-size:2rem}.ft{font-size:1.1rem;font-weight:700}.fd{font-size:0.88rem;color:var(--t2);line-height:1.65;flex:1}
-.ftag{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
-.tag{padding:3px 10px;border-radius:10px;font-size:0.72rem;font-weight:700}
-.tb{background:#ede9fe;color:#5b21b6}.tg{background:#d1fae5;color:#065f46}
-.to{background:#fef3c7;color:#92400e}.tp{background:#ede9fe;color:#7c3aed}
+.fcard.c5::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.fi{font-size:2.4rem}.ft{font-size:1.1rem;font-weight:700}.fd{font-size:0.9rem;color:var(--t2);line-height:1.7;flex:1}
+.ftag{display:flex;flex-wrap:wrap;gap:6px}
+.tag{padding:4px 12px;border-radius:12px;font-size:0.74rem;font-weight:700}
+.tb{background:#ede9fe;color:#5b21b6}.tg{background:#d1fae5;color:#065f46}.to{background:#fef3c7;color:#92400e}.tp{background:#ede9fe;color:#7c3aed}
 
-/* Tool cards */
-.tools-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
-.tcard{
-  background:var(--card);border-radius:var(--r);padding:24px 20px;text-align:center;
-  box-shadow:var(--sh);text-decoration:none;color:var(--text);transition:all 0.2s;
-  border:1px solid var(--bdr);
-}
-.tcard:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.1)}
-.tcard .ti{font-size:2rem;margin-bottom:10px}
-.tcard .tt{font-weight:700;font-size:0.95rem}
-.tcard .td{font-size:0.78rem;color:var(--t2);margin-top:4px}
+.tools-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.tcard{background:var(--card);border-radius:var(--r);padding:28px 22px;text-align:center;box-shadow:var(--sh);text-decoration:none;color:var(--text);border:1px solid var(--bdr);transition:all 0.25s;display:flex;flex-direction:column;align-items:center;gap:10px}
+.tcard:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.1);border-color:var(--p1)}
+.tcard .ti{font-size:2.6rem}.tcard .tt{font-weight:700;font-size:1.05rem}.tcard .td{font-size:0.82rem;color:var(--t2);line-height:1.5}
 
-/* CTA */
-.cta{
-  background:linear-gradient(135deg,var(--p1),var(--p2));color:#fff;
-  border-radius:var(--r);padding:48px;text-align:center;margin:64px 0;
-}
-.cta h2{font-size:1.5rem;margin-bottom:8px}
-.cta p{opacity:0.85;margin-bottom:24px}
-.cta code{background:rgba(255,255,255,0.15);padding:6px 18px;border-radius:8px;font-size:1rem;font-weight:700}
+.cta{background:linear-gradient(135deg,var(--p1),#6366f1);color:#fff;border-radius:var(--r);padding:56px 40px;text-align:center;margin:56px 0}
+.cta h2{font-size:1.7rem;font-weight:800;margin-bottom:10px}
+.cta p{opacity:0.9;font-size:1rem;margin-bottom:24px}
+.cta code{background:rgba(255,255,255,0.15);padding:8px 24px;border-radius:10px;font-size:1.15rem;font-weight:700;letter-spacing:1px}
 
-footer{text-align:center;padding:32px;color:var(--t2);font-size:0.8rem;border-top:1px solid var(--bdr)}
+footer{text-align:center;padding:36px 24px;color:var(--t2);font-size:0.82rem;border-top:1px solid var(--bdr)}
+footer a{color:var(--p1);text-decoration:none;font-weight:600}
 
-@media(max-width:768px){
-  .hero h1{font-size:2rem}.hero{padding:48px 16px 60px}
-  .fgrid{grid-template-columns:1fr}
-  .tools-row{grid-template-columns:repeat(2,1fr)}
-  .hero-stats{gap:20px}
-}
-@media(max-width:480px){.tools-row{grid-template-columns:1fr}}
+@media(max-width:900px){.fgrid{grid-template-columns:repeat(2,1fr)}.hero h1{font-size:2.4rem}}
+@media(max-width:640px){.fgrid{grid-template-columns:1fr}.tools-row{grid-template-columns:1fr}.hero h1{font-size:1.8rem}.hero{padding:60px 16px 80px}.hero-stats{gap:24px}.hs-num{font-size:2rem}}
 </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <a href="index.html" class="nav-logo">&#x2699; 保研skill</a>
+  <a href="index.html" class="nav-logo">&#9881; 保研skill <span>v3.0</span></a>
   <div class="nav-links">
-    <a href="index.html" class="active">首页</a>
-    <a href="practice.html">面试练习</a>
-    <a href="notices.html">通知看板</a>
-    <a href="results.html">成果中心</a>
+    <a href="practice.html">&#127916; 面试练习</a>
+    <a href="notices.html">&#128225; 通知看板</a>
+    <a href="results.html">&#128194; 成果中心</a>
+    <a href="practice.html" class="cta">&#9654; 开始练习</a>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-badge">MECHANICAL ENGINEERING · v2.2</div>
-  <h1>机械保研，一站搞定</h1>
-  <p>从材料准备、信息搜集到面试练习，Claude 助你走完保研每一步。所有数据本地存储，隐私零泄露。</p>
+  <div class="hero-badge"><span class="dot"></span> 18所机械强校覆盖 · 本地数据零上传</div>
+  <h1>机械保研<span>一站搞定</span></h1>
+  <p>简历翻译 · 个人陈述 · 导师邮件 · 推荐信 · 面试练习 · 通知聚合 · Offer对比 —— 从大三到录取，每一步都有准备</p>
   <div class="hero-actions">
-    <a href="practice.html" class="btn btn-primary">开始面试练习</a>
-    <a href="notices.html" class="btn btn-ghost">查看夏令营通知</a>
-    <a href="results.html" class="btn btn-ghost">浏览我的成果</a>
+    <a href="practice.html" class="btn btn-primary">&#9654; 开始面试练习</a>
+    <a href="notices.html" class="btn btn-ghost">&#128225; 查看夏令营通知</a>
+    <a href="results.html" class="btn btn-ghost">&#128194; 浏览我的成果</a>
   </div>
   <div class="hero-stats">
-    <div><div class="hs-num">18</div><div class="hs-lbl">覆盖院校</div></div>
-    <div><div class="hs-num">12+</div><div class="hs-lbl">功能模块</div></div>
-    <div><div class="hs-num">3</div><div class="hs-lbl">在线工具</div></div>
-    <div><div class="hs-num">100%</div><div class="hs-lbl">本地·隐私</div></div>
+    <div class="hs-item"><div class="hs-num">18</div><div class="hs-lbl">覆盖院校</div></div>
+    <div class="hs-item"><div class="hs-num">7</div><div class="hs-lbl">已备材料学校</div></div>
+    <div class="hs-item"><div class="hs-num">19</div><div class="hs-lbl">生成文件</div></div>
+    <div class="hs-item"><div class="hs-num">10</div><div class="hs-lbl">专业课体系</div></div>
   </div>
 </section>
 
 <div class="container">
 
   <div class="section">
-    <div class="section-head"><h2>核心功能</h2><p>在 Claude Code 中输入命令即可使用</p></div>
+    <div class="section-head"><h2>&#128218; 材料准备</h2><p>选目标学校，一键生成全套申请材料</p></div>
     <div class="fgrid">
       <div class="fcard c0">
-        <div class="fi">&#x1F4DD;</div><div class="ft">简历翻译 + 面试题生成</div>
-        <div class="fd">中文简历秒变专业英文CV。自动生成25-30道中英文面试题，每题附带基于你经历的参考答案。</div>
+        <div class="fi">&#128221;</div><div class="ft">简历翻译 + 面试题库</div><div class="fd">中文简历秒变专业英文CV。25-30道中英文面试题，每题带基于你经历的参考答案。每次练习随机抽10道。</div>
         <div class="ftag"><span class="tag tb">/保研 resume</span></div>
       </div>
       <div class="fcard c1">
-        <div class="fi">&#x1F4C4;</div><div class="ft">个人陈述 · 推荐信 · 导师邮件</div>
-        <div class="fd">5段式定制化PS。教授视角推荐信。搜索多位导师，标注风评来源，一键生成学术联系邮件。</div>
-        <div class="ftag"><span class="tag tg">/保研 ps</span><span class="tag tg">/保研 email</span><span class="tag tg">/保研 recommend</span></div>
+        <div class="fi">&#128220;</div><div class="ft">个人陈述</div><div class="fd">5段式定制化PS。已覆盖上交/清华/华科/浙大/哈工深/同济/西交7校，每校按风格定制学术背景和择校理由。</div>
+        <div class="ftag"><span class="tag tg">/保研 ps</span></div>
       </div>
       <div class="fcard c2">
-        <div class="fi">&#x1F4E1;</div><div class="ft">通知聚合 + 专业课复习</div>
-        <div class="fd">18校夏令营/科研营/预推免通知自动抓取，WebSearch智能兜底。基于湖大真实课程体系生成面试复习指南。</div>
-        <div class="ftag"><span class="tag to">/保研 notice</span><span class="tag to">/保研 review</span></div>
+        <div class="fi">&#9993;</div><div class="ft">导师搜索 + 邮件</div><div class="fd">先选学校，搜多位导师（含风评来源），7校专属模板自动生成学术联系邮件。不编造评价，诚实透明。</div>
+        <div class="ftag"><span class="tag to">/保研 email</span><span class="tag to">/保研 recommend</span></div>
       </div>
       <div class="fcard c3">
-        <div class="fi">&#x1F3A4;</div><div class="ft">AI 模拟面试 + 实时点评</div>
-        <div class="fd">浏览器摄像头录制，中英文自由切换。语音转写后直接在页面显示AI三维度评分和改进建议，无需离开。</div>
-        <div class="ftag"><span class="tag tp">/保研 practice</span><span class="tag tp">/保研 mock</span></div>
+        <div class="fi">&#128218;</div><div class="ft">专业课复习</div><div class="fd">湖大机械10门核心课：机械原理/机械设计/材料力学/控制工程/微控制器/数值方法/互换性/制造装备/测试技术/CAD。面试导向，学什么考什么。</div>
+        <div class="ftag"><span class="tag tp">/保研 review</span></div>
       </div>
       <div class="fcard c4">
-        <div class="fi">&#x2696;</div><div class="ft">Offer 对比 · 面经搜索</div>
-        <div class="fd">8维对比分析多个offer，生成雷达图文字描述。结构化搜索知乎/保研论坛面经，存入经验库。</div>
-        <div class="ftag"><span class="tag tb">/保研 compare</span><span class="tag tb">/保研 experience</span></div>
+        <div class="fi">&#128225;</div><div class="ft">通知聚合</div><div class="fd">18校夏令营/科研营/预推免自动抓取+WebSearch兜底。截止倒计时+颜色预警+来源标记。2026最新优先。</div>
+        <div class="ftag"><span class="tag tb">/保研 notice</span></div>
       </div>
       <div class="fcard c5">
-        <div class="fi">&#x1F4C2;</div><div class="ft">成果中心</div>
-        <div class="fd">所有生成文件集中浏览：简历、面试题、个人陈述、推荐信……分类预览，支持导出PDF，一键复制。</div>
-        <div class="ftag"><span class="tag to">results.html</span></div>
+        <div class="fi">&#9878;</div><div class="ft">Offer 对比</div><div class="fd">8维评分（学术/导师/方向/地点/就业/奖助/环境/毕业要求）。雷达图描述+优劣总结+综合建议。</div>
+        <div class="ftag"><span class="tag to">/保研 compare</span></div>
       </div>
     </div>
   </div>
 
   <div class="section">
-    <div class="section-head"><h2>在线工具</h2><p>启动本地服务后访问（Claude Code 中输入 /保研 serve）</p></div>
+    <div class="section-head"><h2>&#127760; 在线工具</h2><p>输入 /保研 serve 启动本地服务后访问</p></div>
     <div class="tools-row">
-      <a href="practice.html" class="tcard"><div class="ti">&#x1F3A5;</div><div class="tt">面试练习</div><div class="td">中英文 · 录制 · AI点评</div></a>
-      <a href="notices.html" class="tcard"><div class="ti">&#x1F4E1;</div><div class="tt">通知 Dashboard</div><div class="td">截止倒计时 · 筛选排序</div></a>
-      <a href="results.html" class="tcard"><div class="ti">&#x1F4C2;</div><div class="tt">成果中心</div><div class="td">文件浏览 · PDF导出</div></a>
-      <a href="practice.html" class="tcard"><div class="ti">&#x1F916;</div><div class="tt">AI模拟面试</div><div class="td">练习完自动出AI点评</div></a>
+      <a href="practice.html" class="tcard"><div class="ti">&#127916;</div><div class="tt">面试练习</div><div class="td">中英文 · 摄像头录制 · 回放复盘 · 纯净体验</div></a>
+      <a href="notices.html" class="tcard"><div class="ti">&#128225;</div><div class="tt">通知 Dashboard</div><div class="td">截止倒计时 · 筛选排序 · 一键刷新</div></a>
+      <a href="results.html" class="tcard"><div class="ti">&#128194;</div><div class="tt">成果中心</div><div class="td">19文件 · 7校材料 · HTML预览 · PDF打印</div></a>
     </div>
   </div>
 
   <div class="cta">
-    <h2>开始你的保研之旅</h2>
-    <p>在 Claude Code 中输入以下命令即可启动全部功能</p>
+    <h2>&#127939; 开始你的保研准备</h2>
+    <p>在 Claude Code 中输入以下命令，启动全部功能</p>
     <code>/保研 serve</code>
-    <p style="margin-top:12px;font-size:0.85rem">首次使用？先试试 <code style="background:rgba(255,255,255,0.1);padding:2px 8px;border-radius:4px">/保研 resume</code> 翻译你的简历</p>
+    <p style="margin-top:16px;font-size:0.9rem">首次使用？先试试 <code style="background:rgba(255,255,255,0.1);padding:4px 12px;border-radius:6px">/保研 resume</code> 翻译你的简历，或输入 <code style="background:rgba(255,255,255,0.1);padding:4px 12px;border-radius:6px">/保研 help</code> 查看完整命令</p>
   </div>
 
 </div>
 
 <footer>
-  <p>保研skill v2.2 · 18所机械强校覆盖 · <a href="https://github.com/fndhwpoff/baoyan-skill" style="color:var(--p1)">GitHub</a> · MIT License</p>
-  <p style="margin-top:4px">全本地 · 零上传 · 隐私安全</p>
+  <p>保研skill v3.0 &middot; 18校覆盖 &middot; <a href="https://github.com/fndhwpoff/baoyan-skill">GitHub</a> &middot; MIT License</p>
+  <p style="margin-top:6px">全本地 &middot; 零上传 &middot; 隐私安全</p>
 </footer>
 
 </body>
