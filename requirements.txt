@@ -1,0 +1,15 @@
+# 保研skill 依赖
+# 安装：pip install -r requirements.txt
+
+# 功能1：通知爬虫
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+lxml>=4.9.0
+
+# 配置解析
+pyyaml>=6.0
+
+# 可选：更好的终端输出
+rich>=13.0.0
+
+# 功能3：无需额外依赖（使用 Python 内置 http.server）

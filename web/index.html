@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保研英文面试练习</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- 顶部导航 -->
+        <header class="app-header">
+            <h1>🎓 保研英文面试练习</h1>
+            <span class="subtitle">English Interview Practice</span>
+        </header>
+
+        <!-- 主区域 -->
+        <main class="app-main">
+
+            <!-- 状态：未开始 -->
+            <section id="state-idle" class="state-panel active">
+                <div class="hero">
+                    <div class="hero-icon">🎤</div>
+                    <h2>准备好练习英文面试了吗？</h2>
+                    <p class="hero-desc">
+                        模拟真实面试场景，使用摄像头进行英文问答练习。<br>
+                        所有录制内容仅保存在你的浏览器中，不会上传。
+                    </p>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">📋</span>
+                            <span>显示英文面试题</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">⏱️</span>
+                            <span>30秒准备 + 90秒作答</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📹</span>
+                            <span>摄像头录制 + 回放</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔒</span>
+                            <span>隐私安全，不上传</span>
+                        </div>
+                    </div>
+                    <button id="btn-start" class="btn btn-primary btn-large">
+                        开始练习
+                    </button>
+                </div>
+            </section>
+
+            <!-- 状态：请求摄像头权限 -->
+            <section id="state-camera-request" class="state-panel">
+                <div class="hero">
+                    <div class="hero-icon">📹</div>
+                    <h2>需要摄像头和麦克风权限</h2>
+                    <p>用于录制你的面试回答。录制内容仅在本地浏览器中。</p>
+                    <button id="btn-request-camera" class="btn btn-primary btn-large">
+                        允许摄像头
+                    </button>
+                    <p class="hint">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="check-no-camera">
+                            不使用摄像头，仅音频（或纯文字模式）
+                        </label>
+                    </p>
+                </div>
+            </section>
+
+            <!-- 状态：准备中（摄像头就绪） -->
+            <section id="state-ready" class="state-panel">
+                <div class="ready-layout">
+                    <div class="camera-area">
+                        <video id="video-preview" autoplay muted playsinline></video>
+                        <video id="video-playback" class="hidden" controls></video>
+                        <div id="camera-placeholder" class="camera-placeholder hidden">
+                            <span>📷</span>
+                            <span>摄像头未开启</span>
+                        </div>
+                    </div>
+                    <div class="info-area">
+                        <h2>摄像头已就绪</h2>
+                        <p class="question-count-info">
+                            已加载 <strong id="total-questions">0</strong> 道题目
+                        </p>
+                        <div class="timer-display" id="timer-display">
+                            <span class="timer-value" id="timer-value">90</span>
+                            <span class="timer-label" id="timer-label">秒</span>
+                        </div>
+                        <button id="btn-next-question" class="btn btn-primary">
+                            开始第一题
+                        </button>
+                        <p class="hint">点击按钮后显示题目，计时开始</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 状态：答题中 -->
+            <section id="state-practicing" class="state-panel">
+                <div class="practice-layout">
+                    <div class="camera-area">
+                        <video id="video-practice-preview" autoplay muted playsinline></video>
+                        <video id="video-practice-playback" class="hidden" controls></video>
+                        <div id="recording-indicator" class="recording-indicator hidden">
+                            <span class="rec-dot"></span>
+                            <span>录制中</span>
+                        </div>
+                    </div>
+                    <div class="question-area">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="question-counter">
+                            第 <strong id="current-question-num">1</strong> /
+                            <span id="total-questions-display">0</span> 题
+                        </div>
+                        <div class="question-card" id="question-card">
+                            <h3 id="question-text">加载中...</h3>
+                            <p class="question-hint" id="question-hint"></p>
+                        </div>
+                        <div class="timer-area">
+                            <div class="timer-circle" id="timer-circle">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="timer-bg" cx="50" cy="50" r="45"/>
+                                    <circle class="timer-progress" id="timer-progress-circle" cx="50" cy="50" r="45"/>
+                                </svg>
+                                <div class="timer-text">
+                                    <span class="timer-big" id="timer-count">30</span>
+                                    <span class="timer-unit">秒</span>
+                                </div>
+                            </div>
+                            <div class="timer-status" id="timer-status">准备中...</div>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="btn-skip" class="btn btn-secondary">跳过</button>
+                            <button id="btn-start-recording" class="btn btn-primary">开始作答</button>
+                            <button id="btn-stop-recording" class="btn btn-danger hidden">结束作答</button>
+                            <button id="btn-next-after" class="btn btn-primary hidden">下一题</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 状态：完成 -->
+            <section id="state-complete" class="state-panel">
+                <div class="hero">
+                    <div class="hero-icon">🎉</div>
+                    <h2>练习完成！</h2>
+                    <p class="hero-desc">
+                        你已完成 <strong id="completed-count">0</strong> 道题目。
+                    </p>
+                    <div class="complete-stats" id="complete-stats">
+                    </div>
+                    <div class="complete-actions">
+                        <button id="btn-restart" class="btn btn-primary">再练一次</button>
+                        <button id="btn-close" class="btn btn-secondary">关闭</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 状态：错误 -->
+            <section id="state-error" class="state-panel">
+                <div class="hero">
+                    <div class="hero-icon">⚠️</div>
+                    <h2 id="error-title">出错了</h2>
+                    <p id="error-message">未知错误</p>
+                    <button id="btn-retry" class="btn btn-primary">重试</button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- 底部 -->
+        <footer class="app-footer">
+            <span>保研skill · English Interview Practice</span>
+            <span class="footer-divider">|</span>
+            <span>录制内容仅在本地浏览器中，不会上传</span>
+        </footer>
+    </div>
+
+    <script src="js/question_loader.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

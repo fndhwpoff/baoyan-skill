@@ -1,0 +1,214 @@
+# 目标学校配置 — 机械工程学院通知页
+# 修改此文件以增删学校或更新URL
+
+schools:
+  # ── C9 联盟 ──
+  - name: 上海交通大学
+    short: 上交
+    level: C9
+    college: 机械与动力工程学院
+    urls:
+      home: "https://me.sjtu.edu.cn"
+      notice: "https://me.sjtu.edu.cn/xyxx/tzgg.html"
+      summer_camp: null   # 需每年确认具体URL
+      pre_push: null
+    encoding: utf-8
+
+  - name: 浙江大学
+    short: 浙大
+    level: C9
+    college: 机械工程学院
+    urls:
+      home: "https://me.zju.edu.cn"
+      notice: "https://me.zju.edu.cn/tzgg/list.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 西安交通大学
+    short: 西交
+    level: C9
+    college: 机械工程学院
+    urls:
+      home: "https://mec.xjtu.edu.cn"
+      notice: "https://mec.xjtu.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 哈尔滨工业大学（深圳）
+    short: 哈工深
+    level: C9
+    college: 机电工程与自动化学院
+    urls:
+      home: "https://smea.hitsz.edu.cn"
+      notice: "https://smea.hitsz.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 哈尔滨工业大学
+    short: 哈工大
+    level: C9
+    college: 机电工程学院
+    urls:
+      home: "https://sme.hit.edu.cn"
+      notice: "https://sme.hit.edu.cn/tzgg/list.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 中国科学技术大学
+    short: 中科大
+    level: C9
+    college: 工程科学学院
+    urls:
+      home: "https://ese.ustc.edu.cn"
+      notice: "https://ese.ustc.edu.cn/tzgg/list.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 清华大学
+    short: 清华
+    level: C9
+    college: 机械工程系
+    urls:
+      home: "https://www.me.tsinghua.edu.cn"
+      notice: "https://www.me.tsinghua.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 北京大学
+    short: 北大
+    level: C9
+    college: 工学院（含力学与工程科学）
+    urls:
+      home: "https://www.coe.pku.edu.cn"
+      notice: "https://www.coe.pku.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  # ── 机械强势985 ──
+  - name: 同济大学
+    short: 同济
+    level: 机械强校985
+    college: 机械与能源工程学院
+    urls:
+      home: "https://mefaculty.tongji.edu.cn"
+      notice: "https://mefaculty.tongji.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 华中科技大学
+    short: 华科
+    level: 机械强校985
+    college: 机械科学与工程学院
+    urls:
+      home: "https://mse.hust.edu.cn"
+      notice: "https://mse.hust.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 北京航空航天大学
+    short: 北航
+    level: 机械强校985
+    college: 机械工程及自动化学院
+    urls:
+      home: "https://www.me.buaa.edu.cn"
+      notice: "https://www.me.buaa.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 北京理工大学
+    short: 北理
+    level: 机械强校985
+    college: 机械与车辆学院
+    urls:
+      home: "https://me.bit.edu.cn"
+      notice: "https://me.bit.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 大连理工大学
+    short: 大工
+    level: 机械强校985
+    college: 机械工程学院
+    urls:
+      home: "https://me.dlut.edu.cn"
+      notice: "https://me.dlut.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 天津大学
+    short: 天大
+    level: 机械强校985
+    college: 机械工程学院
+    urls:
+      home: "https://me.tju.edu.cn"
+      notice: "https://me.tju.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 西北工业大学
+    short: 西工大
+    level: 机械强校985
+    college: 机电学院
+    urls:
+      home: "https://jidian.nwpu.edu.cn"
+      notice: "https://jidian.nwpu.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 东南大学
+    short: 东大
+    level: 机械强校985
+    college: 机械工程学院
+    urls:
+      home: "https://me.seu.edu.cn"
+      notice: "https://me.seu.edu.cn/tzgg/list.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 华南理工大学
+    short: 华工
+    level: 机械强校985
+    college: 机械与汽车工程学院
+    urls:
+      home: "https://www2.scut.edu.cn/smae/"
+      notice: "https://www2.scut.edu.cn/smae/tzgg/list.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 重庆大学
+    short: 重大
+    level: 机械强校985
+    college: 机械与运载工程学院
+    urls:
+      home: "https://www.cmve.cqu.edu.cn"
+      notice: "https://www.cmve.cqu.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+# ── 爬虫配置 ──
+scraper:
+  # 请求间隔（秒），避免被封
+  delay_seconds: 2
+  # 缓存有效期（小时）
+  cache_hours: 6
+  # 超时（秒）
+  timeout: 15
+  # User-Agent
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"

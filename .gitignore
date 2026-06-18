@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.env
+venv/
+.venv/
+
+# 数据目录（运行时生成，保留 .gitkeep）
+data/notices/*
+!data/notices/.gitkeep
+data/questions/*
+!data/questions/.gitkeep
+
+# 输出目录（用户生成的文件，保留 .gitkeep）
+output/resume/*
+!output/resume/.gitkeep
+output/questions/*
+!output/questions/.gitkeep
+
+# 用户个人文件
+*.pdf
+*_extracted.txt
+*简历*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.log
