@@ -31,7 +31,7 @@ schools:
     college: 机械工程学院
     urls:
       home: "https://mec.xjtu.edu.cn"
-      notice: "https://mec.xjtu.edu.cn/tzgg.htm"      # 需验证
+      notice: "https://mec.xjtu.edu.cn/yjsjy/tzgg.htm"  # 更新：研究生教育通知页
       summer_camp: null
       pre_push: null
     encoding: utf-8
@@ -43,6 +43,29 @@ schools:
     urls:
       home: "https://smea.hitsz.edu.cn"
       notice: "https://smea.hitsz.edu.cn/tzgg.htm"
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+    timeout: 25  # 增加超时时间
+
+  - name: 清华大学
+    short: 清华
+    level: C9
+    college: 机械工程系
+    urls:
+      home: "https://www.me.tsinghua.edu.cn"
+      notice: "https://www.me.tsinghua.edu.cn/jyjx/yjsjx/tzgg.htm"  # 更新：研究生教学通知
+      summer_camp: null
+      pre_push: null
+    encoding: utf-8
+
+  - name: 北京大学
+    short: 北大
+    level: C9
+    college: 工学院
+    urls:
+      home: "https://www.coe.pku.edu.cn"
+      notice: "https://www.coe.pku.edu.cn/xwgg/tzgg.htm"  # 更新：新闻公告/通知公告
       summer_camp: null
       pre_push: null
     encoding: utf-8
@@ -65,28 +88,6 @@ schools:
     urls:
       home: "https://ese.ustc.edu.cn"
       notice: "https://ese.ustc.edu.cn/tzgg/list.htm"
-      summer_camp: null
-      pre_push: null
-    encoding: utf-8
-
-  - name: 清华大学
-    short: 清华
-    level: C9
-    college: 机械工程系
-    urls:
-      home: "https://www.me.tsinghua.edu.cn"
-      notice: "https://www.me.tsinghua.edu.cn/tzgg.htm"
-      summer_camp: null
-      pre_push: null
-    encoding: utf-8
-
-  - name: 北京大学
-    short: 北大
-    level: C9
-    college: 工学院（含力学与工程科学）
-    urls:
-      home: "https://www.coe.pku.edu.cn"
-      notice: "https://www.coe.pku.edu.cn/tzgg.htm"
       summer_camp: null
       pre_push: null
     encoding: utf-8

@@ -118,11 +118,15 @@ def extract_notice_links(html, base_url):
     soup = BeautifulSoup(html, "lxml")
     notices = []
 
-    # 关键词列表
+    # 关键词列表（v2.2 扩展：覆盖科研营、学术营等多种命名）
     keywords = [
         "夏令营", "预推免", "推免", "研究生招生", "优秀大学生",
         "暑期学校", "保研", "接收推荐", "免试", "招生简章",
         "报名通知", "复试", "选拔", "暑期夏令营",
+        "科研营", "学术夏令营", "学术营", "开放日",
+        "优秀大学生暑期学校", "全国优秀大学生",
+        "研究生暑期学校", "推免生", "接收推免",
+        "博士招生", "申请考核", "硕博连读",
         "summer camp", "summer school", "graduate admission",
     ]
 
@@ -169,6 +173,15 @@ def extract_notice_links(html, base_url):
                     "matched_keywords": [],
                     "source": "scraper",
                 })
+
+    # 提取年份信息，优先排序近两年（2025-2026）的通知
+    current_year = datetime.now().year
+    for n in notices:
+        years = re.findall(r'(20\d{2})', n.get("title", ""))
+        n["_years"] = [int(y) for y in years]
+        n["_has_recent"] = any(y >= current_year - 1 for y in n["_years"])
+    # 排序：有最近年份的排前面，然后按标题排序
+    notices.sort(key=lambda n: (not n.get("_has_recent", False), n.get("title", "")))
 
     return notices[:20]  # 最多取20条
 
