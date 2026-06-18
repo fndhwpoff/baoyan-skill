@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成果中心 — 保研skill</title>
+    <style>
+        :root {
+            --bg: #f5f6f8; --card: #fff; --text: #1a1a2e; --text2: #6b7280;
+            --primary: #4f46e5; --success: #059669; --warning: #d97706;
+            --border: #e5e7eb; --radius: 10px; --shadow: 0 1px 3px rgba(0,0,0,0.08);
+            --font: -apple-system, "Microsoft YaHei", sans-serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:var(--font); background:var(--bg); color:var(--text); min-height:100vh; }
+        .header {
+            background: linear-gradient(135deg,#1e1b4b,#4f46e5); color:white;
+            padding:24px 32px; display:flex; justify-content:space-between; align-items:center;
+        }
+        .header h1 { font-size:1.5rem; }
+        .header nav { display:flex; gap:8px; }
+        .header nav a { color:rgba(255,255,255,0.8); text-decoration:none; padding:6px 12px; border-radius:16px; font-size:0.85rem; transition:all 0.2s; }
+        .header nav a:hover, .header nav a.active { background:rgba(255,255,255,0.15); color:white; }
+
+        .container { max-width:1200px; margin:0 auto; padding:24px; display:grid; grid-template-columns:260px 1fr; gap:24px; }
+
+        .sidebar { position:sticky; top:24px; }
+        .category-list { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+        .category-item {
+            padding:14px 18px; cursor:pointer; font-size:0.9rem; font-weight:600;
+            border-left:3px solid transparent; display:flex; align-items:center; gap:10px;
+            transition:all 0.15s; color:var(--text);
+        }
+        .category-item:hover { background:#f8fafc; }
+        .category-item.active { background:#ede9fe; border-left-color:var(--primary); color:var(--primary); }
+        .category-count { margin-left:auto; font-size:0.78rem; color:var(--text2); background:#f3f4f6; padding:2px 10px; border-radius:12px; }
+        .category-item.active .category-count { background:var(--primary); color:white; }
+
+        .content-area { min-height:60vh; }
+        .file-list { display:flex; flex-direction:column; gap:8px; }
+        .file-card {
+            background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+            padding:16px 20px; cursor:pointer; transition:all 0.2s; border-left:4px solid transparent;
+        }
+        .file-card:hover { border-left-color:var(--primary); box-shadow:0 2px 12px rgba(0,0,0,0.1); }
+        .file-card.active { border-left-color:var(--primary); background:#f8f7ff; }
+        .file-card .file-name { font-weight:600; font-size:0.95rem; }
+        .file-card .file-meta { font-size:0.8rem; color:var(--text2); margin-top:4px; }
+
+        .preview-panel {
+            background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+            padding:28px; margin-top:16px; display:none;
+        }
+        .preview-panel.show { display:block; }
+        .preview-panel .markdown-content { line-height:1.8; font-size:0.95rem; }
+        .preview-panel .markdown-content h1,.preview-panel .markdown-content h2,.preview-panel .markdown-content h3 { margin:1em 0 0.5em; }
+        .preview-panel .markdown-content table { border-collapse:collapse; width:100%; margin:12px 0; }
+        .preview-panel .markdown-content th,.preview-panel .markdown-content td { border:1px solid var(--border); padding:8px 12px; text-align:left; font-size:0.9rem; }
+        .preview-panel .markdown-content th { background:#f9fafb; }
+        .preview-panel .markdown-content code { background:#f3f4f6; padding:2px 6px; border-radius:4px; font-size:0.85rem; }
+
+        .empty-state { text-align:center; padding:60px; color:var(--text2); }
+        .empty-state .icon { font-size:3rem; }
+        .loading { text-align:center; padding:40px; color:var(--text2); }
+
+        .btn { padding:8px 16px; border-radius:6px; border:2px solid var(--border); background:var(--card); cursor:pointer; font-family:var(--font); font-weight:600; font-size:0.85rem; }
+        .btn-primary { background:var(--primary); color:white; border-color:var(--primary); }
+        .btn-actions { display:flex; gap:8px; align-items:center; }
+
+        @media (max-width:768px) {
+            .container { grid-template-columns:1fr; }
+            .sidebar { position:static; }
+            .category-list { display:flex; flex-wrap:wrap; gap:4px; }
+            .category-item { padding:8px 12px; font-size:0.8rem; border-left:none; border-radius:8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div>
+        <h1>📂 成果中心</h1>
+        <p style="opacity:0.8;font-size:0.85rem;margin-top:4px">保研材料一站式浏览</p>
+    </div>
+    <nav>
+        <a href="index.html">🎥 面试练习</a>
+        <a href="notices.html">📡 通知看板</a>
+        <a href="results.html" class="active">📂 成果</a>
+    </nav>
+</div>
+
+<div class="container">
+    <aside class="sidebar">
+        <div class="category-list" id="category-list"></div>
+    </aside>
+    <main class="content-area">
+        <div id="file-list-area"><div class="loading">加载中...</div></div>
+        <div class="preview-panel" id="preview-panel">
+            <div class="btn-actions" style="margin-bottom:16px">
+                <button class="btn" onclick="closePreview()">← 返回列表</button>
+                <button class="btn btn-primary" id="btn-copy" onclick="copyContent()">📋 复制全文</button>
+            </div>
+            <div class="markdown-content" id="preview-content"></div>
+        </div>
+    </main>
+</div>
+
+<script>
+const CATEGORIES = {
+    'resume': { icon:'📝', label:'简历翻译' },
+    'questions': { icon:'🎤', label:'面试问题' },
+    'ps': { icon:'📄', label:'个人陈述' },
+    'email': { icon:'✉️', label:'导师邮件' },
+    'recommend': { icon:'📨', label:'推荐信' },
+    'exam': { icon:'📖', label:'专业课复习' },
+    'compare': { icon:'⚖️', label:'Offer对比' },
+};
+
+let allFiles = [];
+let currentCategory = 'all';
+let currentFile = null;
+
+async function init() {
+    try {
+        const resp = await fetch('/api/results');
+        allFiles = (await resp.json()).files || [];
+        renderCategories();
+        renderFileList();
+    } catch(e) {
+        document.getElementById('file-list-area').innerHTML = '<div class="empty-state"><div class="icon">🔌</div><h3>服务未连接</h3><p>请先运行 /保研 serve 启动服务</p></div>';
+    }
+}
+
+function renderCategories() {
+    const counts = {};
+    counts['all'] = allFiles.length;
+    allFiles.forEach(f => { counts[f.category] = (counts[f.category]||0)+1; });
+
+    let html = `<div class="category-item active" data-cat="all" onclick="selectCategory('all')">
+        🏠 全部 <span class="category-count">${counts.all||0}</span></div>`;
+    for (const [key, info] of Object.entries(CATEGORIES)) {
+        if (counts[key]) {
+            html += `<div class="category-item" data-cat="${key}" onclick="selectCategory('${key}')">
+                ${info.icon} ${info.label} <span class="category-count">${counts[key]}</span></div>`;
+        }
+    }
+    document.getElementById('category-list').innerHTML = html;
+}
+
+function selectCategory(cat) {
+    currentCategory = cat;
+    document.querySelectorAll('.category-item').forEach(el => el.classList.remove('active'));
+    document.querySelector(`[data-cat="${cat}"]`)?.classList.add('active');
+    closePreview();
+    renderFileList();
+}
+
+function renderFileList() {
+    const files = currentCategory === 'all' ? allFiles : allFiles.filter(f => f.category === currentCategory);
+    if (files.length === 0) {
+        document.getElementById('file-list-area').innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>暂无文件</h3><p>使用 /保研 命令生成内容后将出现在这里</p></div>';
+        return;
+    }
+    let html = '<div class="file-list">';
+    files.forEach(f => {
+        const cat = CATEGORIES[f.category] || {icon:'📋',label:f.category};
+        const date = f.date ? new Date(f.date).toLocaleString('zh-CN') : '';
+        html += `<div class="file-card" onclick="loadPreview('${f.path}')">
+            <div class="file-name">${cat.icon} ${f.name}</div>
+            <div class="file-meta">📁 ${cat.label} · ${date} · ${f.size || ''}</div>
+        </div>`;
+    });
+    html += '</div>';
+    document.getElementById('file-list-area').innerHTML = html;
+}
+
+async function loadPreview(path) {
+    document.querySelectorAll('.file-card').forEach(el => el.classList.remove('active'));
+    const cards = document.querySelectorAll('.file-card');
+    const idx = allFiles.findIndex(f => f.path === path);
+    if (idx >= 0 && cards[idx]) cards[idx].classList.add('active');
+
+    try {
+        const resp = await fetch(`/api/results/content?path=${encodeURIComponent(path)}`);
+        if (!resp.ok) throw new Error('Failed');
+        const data = await resp.json();
+        document.getElementById('preview-content').innerHTML = simpleMarkdown(data.content || '');
+        document.getElementById('preview-panel').classList.add('show');
+        document.getElementById('preview-panel').scrollIntoView({behavior:'smooth'});
+        currentFile = data;
+    } catch(e) {
+        alert('加载失败: ' + e.message);
+    }
+}
+
+function closePreview() {
+    document.getElementById('preview-panel').classList.remove('show');
+    document.querySelectorAll('.file-card').forEach(el => el.classList.remove('active'));
+    currentFile = null;
+}
+
+function copyContent() {
+    if (!currentFile || !currentFile.content) return;
+    navigator.clipboard.writeText(currentFile.content).then(() => {
+        const btn = document.getElementById('btn-copy');
+        btn.textContent = '✅ 已复制！';
+        setTimeout(() => btn.textContent = '📋 复制全文', 2000);
+    });
+}
+
+function simpleMarkdown(text) {
+    let html = text;
+    html = html.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // Headers
+    html = html.replace(/^### (.+)$/gm,'<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm,'<h2>$1</h2>');
+    html = html.replace(/^# (.+)$/gm,'<h1>$1</h1>');
+    // Bold/Italic
+    html = html.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    html = html.replace(/\*(.+?)\*/g,'<em>$1</em>');
+    // Code
+    html = html.replace(/`([^`]+)`/g,'<code>$1</code>');
+    // Tables
+    html = html.replace(/^\|(.+)\|$/gm, line => {
+        const cells = line.split('|').filter(c => c.trim());
+        if (cells.every(c => /^[-:]+$/.test(c.trim()))) return ''; // separator row
+        const tag = line.match(/^\|[-: ]+\|$/) ? '' : (line.indexOf('|---') === -1 ? 'td' : 'th');
+        if (tag === 'th') return '<tr>' + cells.map(c => `<th>${c.trim()}</th>`).join('') + '</tr>';
+        return '<tr>' + cells.map(c => `<td>${c.trim()}</td>`).join('') + '</tr>';
+    });
+    html = html.replace(/(<tr>[\s\S]*?<\/tr>){2,}/g, match => `<table>${match}</table>`);
+    // Line breaks
+    html = html.replace(/\n\n/g,'</p><p>');
+    html = html.replace(/\n/g,'<br>');
+    html = '<p>' + html + '</p>';
+    // Clean empty paragraphs
+    html = html.replace(/<p><\/p>/g,'');
+    html = html.replace(/<p><br><\/p>/g,'');
+    return html;
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

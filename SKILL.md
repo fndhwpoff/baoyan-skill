@@ -1,13 +1,14 @@
 ---
 name: 保研skill
 description: >
-  保研全流程助手 v2.0：简历翻译 + 中英文面试问题生成 + 夏令营/预推免通知聚合 + 面试口语练习(中/英) +
-  个人陈述生成 + 联系导师邮件 + 推荐信草稿 + 笔试备考 + Offer对比 + AI面试反馈 + 模拟面试官 + 面经库。
+  保研全流程助手 v2.1：简历翻译 + 中英文面试问题(含参考答案) + 夏令营/预推免通知聚合 + 面试口语练习(中/英) +
+  个人陈述生成 + 多导师搜索推荐 + 推荐信草稿 + 专业课知识点复习 + Offer对比 + AI面试反馈 + 模拟面试官 + 面经库 +
+  成果展示门户。
   触发词：保研、夏令营、预推免、简历翻译、面试问题、面试练习、机械保研。
 argument-hint: "[resume | notice | interview | practice | ps | email | recommend | exam | compare | feedback | mock | experience]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, WebFetch, WebSearch
-version: 2.0.0
+version: 2.1.0
 ---
 
 # 保研 Skill v2.0 — 机械工程保研全流程助手
@@ -21,7 +22,7 @@ version: 2.0.0
 | `/保研 email` | 联系导师邮件 | 生成得体学术联系邮件 |
 | `/保研 recommend` | 推荐信草稿 | 学术型/竞赛型推荐信 |
 | `/保研 notice` | 通知聚合 | 18 校夏令营/预推免通知抓取+WebSearch |
-| `/保研 exam` | 笔试备考指南 | 机械专业课分科备考 |
+| `/保研 review` | 专业课知识点复习 | 基于湖大课程体系+简历项目的面试专业课复习 |
 | `/保研 compare` | Offer 对比 | 8 维对比分析 + 建议 |
 | `/保研 practice` | 面试口语练习 | 浏览器端中英文面试练习 |
 | `/保研 feedback` | AI 面试反馈 | 语音转写→AI评估 |
@@ -83,13 +84,21 @@ python3 ${CLAUDE_SKILL_DIR}/tools/question_store.py --action save --file output/
 
 ---
 
-## 功能三：联系导师邮件（/保研 email）
+## 功能三：导师搜索与联系（/保研 email）
 
-参考 `${CLAUDE_SKILL_DIR}/prompts/advisor_email_cn.md`
+### Step 1：搜索多位候选导师
+参考 `${CLAUDE_SKILL_DIR}/prompts/advisor_search.md`：
+1. WebSearch 目标学校学院官网师资页面
+2. 搜索科研产出（Google Scholar / CNKI）
+3. 搜索导师风评（知乎/导师评价网，**必须标注来源和时效**）
+4. 输出 **3-5 位**候选导师，含研究方向、论文、匹配度、风格信息
+5. 如果没有找到风评，诚实标注"未找到"，建议通过学长学姐了解
 
-1. 询问：导师姓名/职称/研究方向、具体论文或项目（学生读过的）、学生基本背景
-2. 生成 300-500 字学术邮件（含具体论文引用、匹配度展示、礼貌措辞）
-3. 输出到 `output/email/email_{school}_{timestamp}.md`
+### Step 2：学生选择后生成邮件
+参考 `${CLAUDE_SKILL_DIR}/prompts/advisor_email_cn.md`：
+1. 基于学生选择的导师，生成 300-500 字学术邮件
+2. 含具体论文引用、匹配度展示、礼貌措辞
+3. 输出到 `output/email/email_{school}_{advisor}_{timestamp}.md`
 
 ---
 
@@ -130,14 +139,15 @@ python3 ${CLAUDE_SKILL_DIR}/tools/notice_scraper.py --action merge-websearch --s
 
 ---
 
-## 功能六：笔试备考指南（/保研 exam）
+## 功能六：专业课知识点复习（/保研 review）
 
-参考 `${CLAUDE_SKILL_DIR}/prompts/exam_prep.md` 和 `data/exam_topics.json`
+参考 `${CLAUDE_SKILL_DIR}/prompts/course_review.md` 和 `data/hnu_courses.json`（湖南大学机械专业实际课程体系）
 
-1. 询问：目标学校、专业方向、考试科目范围
-2. 基于学校风格（清华重理论/上交重综合/浙大重实践等）生成备考指南
-3. 包含：笔试概况、分科重点、典型题型、备考策略、模拟题
-4. 输出到 `output/exam/exam_prep_{school}_{timestamp}.md`
+1. 读取简历，识别涉及的专业课领域
+2. 从课程体系中提取相关知识点的 **面试重点**（不是笔试刷题，而是面试问答准备）
+3. 按项目组织：每个项目→可能被追问的专业课知识→核心概念→回答框架
+4. 包含跨课程综合问答和复习建议
+5. 输出到 `output/exam/review_{timestamp}.md`
 
 ---
 

@@ -165,7 +165,8 @@ const QuestionLoader = (() => {
         if (loaded) return questions;
 
         try {
-            const url = `/api/questions?lang=${lang}`;
+            // 随机抽取10道题用于练习（题库可能很大）
+            const url = `/api/questions?lang=${lang}&sample=10`;
             const resp = await fetch(url);
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const data = await resp.json();
