@@ -261,16 +261,19 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             body = self._read_body()
             sid = str(uuid.uuid4())[:8]
-            fd = {"session_id":sid,"question":body.get("question",""),"transcript":body.get("transcript",""),"category":body.get("category","general"),"created_at":datetime.now().isoformat(),"feedback":None}
+            transcript = body.get("transcript","")
+            question = body.get("question","")
+            category = body.get("category","general")
+            # Process immediately using the worker's evaluate function
+            sys.path.insert(0, str(SKILL_DIR/"tools"))
+            from feedback_worker import evaluate_answer
+            result = evaluate_answer(question, transcript, category)
+            fd = {"session_id":sid,"question":question,"transcript":transcript,"category":category,"created_at":datetime.now().isoformat(),"feedback":result,"processed_at":datetime.now().isoformat()}
             FEEDBACK_DIR = SKILL_DIR/"data"/"feedback"
             FEEDBACK_DIR.mkdir(parents=True,exist_ok=True)
             with open(FEEDBACK_DIR/f"feedback_{sid}.json","w",encoding="utf-8") as f:
                 json.dump(fd,f,ensure_ascii=False,indent=2)
-            # Auto-process immediately
-            try:
-                subprocess.Popen(["python",str(FEEDBACK_WORKER)],cwd=str(SKILL_DIR))
-            except: pass
-            self.json({"session_id":sid,"status":"pending","hint":"AI处理中，等待几秒后刷新查看结果..."})
+            self.json({"session_id":sid,"status":"done","feedback":result})
         except Exception as e:
             self.json({"error":str(e)},500)
 
