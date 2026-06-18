@@ -85,6 +85,8 @@ class Handler(SimpleHTTPRequestHandler):
 
     # ── File serving ──
     def serve_file(self, path):
+        from urllib.parse import unquote
+        path = unquote(path)  # Decode URL-encoded Chinese characters
         fp = SKILL_DIR / path.lstrip("/")
         if not fp.exists():
             self.send_error(404); return
