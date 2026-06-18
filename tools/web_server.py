@@ -96,9 +96,11 @@ class PracticeServerHandler(SimpleHTTPRequestHandler):
                 for f in sorted(cat_path.iterdir(), reverse=True):
                     if f.suffix in (".md", ".txt") and f.name != ".gitkeep":
                         stat = f.stat()
+                        # Normalize to forward slashes for cross-platform compatibility
+                        rel_path = str(f.relative_to(SKILL_DIR)).replace("\\", "/")
                         files.append({
                             "name": f.name,
-                            "path": str(f.relative_to(SKILL_DIR)),
+                            "path": rel_path,
                             "category": cat_key,
                             "date": datetime.fromtimestamp(stat.st_mtime).isoformat(),
                             "size": f"{stat.st_size // 1024} KB",
@@ -115,6 +117,8 @@ class PracticeServerHandler(SimpleHTTPRequestHandler):
             if not path:
                 self.serve_json({"error": "缺少 path 参数"}, status=400)
                 return
+            # Normalize path (handle both / and \)
+            path = path.replace("\\", "/")
             full_path = SKILL_DIR / path
             # 安全检查：只允许 output/ 和 data/ 目录
             allowed = [str(OUTPUT_DIR), str(SKILL_DIR / "data")]
@@ -401,11 +405,11 @@ def main():
     print("=" * 55)
     print("  保研skill v2.1 — Web 服务器")
     print("=" * 55)
-    print(f"  [面试练习]    http://localhost:{args.port}")
-    print(f"  [通知看板]    http://localhost:{args.port}/notices.html")
-    print(f"  [成果中心]    http://localhost:{args.port}/results.html")
-    print(f"  [模拟面试]    http://localhost:{args.port}/interviewer.html")
-    print(f"  [健康检查]    http://localhost:{args.port}/api/health")
+    print(f"  🏠 总门户      http://localhost:{args.port}")
+    print(f"  🎥 面试练习    http://localhost:{args.port}/practice.html")
+    print(f"  📡 通知看板    http://localhost:{args.port}/notices.html")
+    print(f"  📂 成果中心    http://localhost:{args.port}/results.html")
+    print(f"  🤖 模拟面试    http://localhost:{args.port}/interviewer.html")
     print(f"  按 Ctrl+C 停止")
     print("=" * 55)
     try:
