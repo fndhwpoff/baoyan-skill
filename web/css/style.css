@@ -484,3 +484,81 @@ body {
         font-size: 1rem;
     }
 }
+
+@media (max-width: 480px) {
+    /* 触摸友好 */
+    .btn {
+        min-height: 44px;
+        font-size: 1rem;
+        touch-action: manipulation;
+    }
+
+    body {
+        font-size: 16px;
+    }
+
+    .app-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .app-main {
+        padding: 10px;
+    }
+
+    .practice-layout,
+    .ready-layout {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .camera-area {
+        aspect-ratio: 3 / 4;
+    }
+
+    .question-card {
+        padding: 14px;
+        min-height: 100px;
+    }
+
+    .question-card h3 {
+        font-size: 1rem;
+    }
+
+    .timer-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .timer-big {
+        font-size: 1.4rem;
+    }
+
+    .action-buttons {
+        flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+        flex: 1 1 auto;
+        min-width: 80px;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+    }
+
+    .complete-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .feature-item {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+
+    .hero-icon {
+        font-size: 3rem;
+    }
+
+    .hero h2 {
+        font-size: 1.3rem;
+    }
+}

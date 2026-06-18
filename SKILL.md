@@ -1,52 +1,54 @@
 ---
 name: 保研skill
 description: >
-  保研全流程助手：英文简历翻译 + 中英文面试问题生成 + 夏令营/预推免通知聚合 + 英文口语面试练习。
-  触发词：保研、夏令营、预推免、简历翻译、面试问题、英文练习、机械保研。
-argument-hint: "[resume | notice | interview | practice]"
+  保研全流程助手 v2.0：简历翻译 + 中英文面试问题生成 + 夏令营/预推免通知聚合 + 面试口语练习(中/英) +
+  个人陈述生成 + 联系导师邮件 + 推荐信草稿 + 笔试备考 + Offer对比 + AI面试反馈 + 模拟面试官 + 面经库。
+  触发词：保研、夏令营、预推免、简历翻译、面试问题、面试练习、机械保研。
+argument-hint: "[resume | notice | interview | practice | ps | email | recommend | exam | compare | feedback | mock | experience]"
 user-invocable: true
 allowed-tools: Read, Write, Edit, Bash, WebFetch, WebSearch
-version: 1.0.0
+version: 2.0.0
 ---
 
-# 保研 Skill — 机械工程保研全流程助手
+# 保研 Skill v2.0 — 机械工程保研全流程助手
 
-## 触发条件
+## 快速命令参考
 
-当用户提到以下任意内容时启动：
-
-| 触发方式 | 示例 |
-|----------|------|
-| 斜杠命令 | `/保研 resume`、`/保研 notice`、`/保研 interview`、`/保研 practice` |
-| 自然语言 | "帮我翻译简历"、"生成英文简历"、"帮我准备面试"、"查夏令营通知"、"搜预推免"、"英文面试练习"、"模拟面试" |
-
----
+| 命令 | 功能 | 说明 |
+|------|------|------|
+| `/保研 resume` | 简历翻译 + 面试题生成 | 中文简历→英文简历+中英文面试题 |
+| `/保研 ps` | 个人陈述生成 | 定制化 1500-2000 字中文个人陈述 |
+| `/保研 email` | 联系导师邮件 | 生成得体学术联系邮件 |
+| `/保研 recommend` | 推荐信草稿 | 学术型/竞赛型推荐信 |
+| `/保研 notice` | 通知聚合 | 18 校夏令营/预推免通知抓取+WebSearch |
+| `/保研 exam` | 笔试备考指南 | 机械专业课分科备考 |
+| `/保研 compare` | Offer 对比 | 8 维对比分析 + 建议 |
+| `/保研 practice` | 面试口语练习 | 浏览器端中英文面试练习 |
+| `/保研 feedback` | AI 面试反馈 | 语音转写→AI评估 |
+| `/保研 mock` | AI 模拟面试官 | 对话式追问面试 |
+| `/保研 experience` | 面经搜索 | 搜索+结构化存储各校面经 |
+| `/保研 serve` | 启动 Web 服务 | 启动本地 Web 服务 |
+| `/保研 help` | 帮助 | 显示本帮助信息 |
 
 ## 工具使用规则
 
 | 任务 | 工具 |
 |------|------|
-| 读取简历文件（PDF/图片/TXT/MD） | `Read` |
-| 翻译简历、生成面试题 | Claude 原生能力（参考 prompts/） |
-| 保存生成的文件 | `Write` |
-| 批量抓取学校通知 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/notice_scraper.py` |
-| 语义解析通知内容 | `WebFetch`（重点学校）/ Python scraper（全量） |
-| 管理面试题 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/question_store.py` |
-| 启动英文练习网页 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/web_server.py` |
-
-**基础目录**：所有输出文件写入 `./output/`（相对于本项目目录）。
+| 读取简历文件 | `Read` |
+| 生成文本内容 | Claude 原生能力（参考 prompts/） |
+| 保存文件 | `Write` |
+| 通知抓取 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/notice_scraper.py` |
+| WebSearch 兜底 | `WebSearch` + `python3 ${CLAUDE_SKILL_DIR}/tools/notice_scraper.py --action merge-websearch` |
+| 面试题管理 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/question_store.py` |
+| 面经管理 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/experience_store.py` |
+| 启动 Web 服务 | `Bash` → `python3 ${CLAUDE_SKILL_DIR}/tools/web_server.py` |
+| 通知语义解析 | `WebFetch` |
 
 ---
 
 ## 功能一：简历翻译 + 面试题生成（/保研 resume）
 
-### 触发
-用户说"帮我翻译简历"、"生成面试问题"、"/保研 resume"、"帮我准备保研面试"
-
-### 工作流
-
-#### Step 1：接收简历
-询问用户提供简历：
+### Step 1：接收简历
 ```
 请提供你的中文简历，可以：
   [A] 直接粘贴文本
@@ -54,131 +56,160 @@ version: 1.0.0
   [C] 告诉我简历的文件路径
 ```
 
-- 如果是文件路径 → 用 `Read` 工具读取
-- 如果是粘贴 → 直接接收文本
-- 如果是 PDF/图片 → 用 `Read` 工具读取（Claude 原生支持）
+### Step 2：翻译英文简历
+参考 `${CLAUDE_SKILL_DIR}/prompts/resume_translate_en.md`，输出到 `output/resume/`
 
-#### Step 2：翻译英文简历
-参考 `${CLAUDE_SKILL_DIR}/prompts/resume_translate_en.md` 中的翻译规则：
+### Step 3：生成中文面试问题
+参考 `${CLAUDE_SKILL_DIR}/prompts/interview_questions_cn.md`，15-20 题，输出到 `output/questions/`
 
-- 保留所有事实内容，不做增删
-- 将中文简历各部分映射为英文对应格式
-- 正确处理机械工程专业术语（如"有限元分析" → "Finite Element Analysis (FEA)"）
-- 保持 ATS 友好格式
-- 以 Markdown 格式输出英文简历
+### Step 4：生成英文面试问题
+参考 `${CLAUDE_SKILL_DIR}/prompts/interview_questions_en.md`，8-12 题，输出到 `output/questions/`
 
-写入 `output/resume/resume_en_{timestamp}.md`
-
-#### Step 3：生成中文面试问题
-参考 `${CLAUDE_SKILL_DIR}/prompts/interview_questions_cn.md` ：
-
-- 角色扮演为机械工程保研面试官
-- 根据简历内容生成 15-20 个中文问题
-- 覆盖三个维度：
-  1. **技术问题**：项目细节、科研方法、专业课程
-  2. **行为问题**：团队协作、解决冲突、研究动机
-  3. **通用问题**：自我介绍、优缺点、未来规划
-- 每题附上"面试官想考察什么"和"回答提示"
-
-写入 `output/questions/interview_cn_{timestamp}.md`
-
-#### Step 4：生成英文面试问题
-参考 `${CLAUDE_SKILL_DIR}/prompts/interview_questions_en.md` ：
-
-- 生成 8-12 个英文问题
-- 覆盖技术和行为维度
-- 每题附考察点和回答提示
-- 额外标注可能的追问
-
-写入 `output/questions/interview_en_{timestamp}.md`
-
-#### Step 5：保存到题库（可选）
-询问用户是否将问题存入题库（供功能三使用）：
-```
-是否将面试题保存到题库？（保存后可用于英文口语练习）
-  [Y] 保存
-  [N] 仅导出文件
-```
-
-如果保存 → `python3 ${CLAUDE_SKILL_DIR}/tools/question_store.py --action save --file output/questions/interview_en_{timestamp}.md`
-
----
-
-## 功能二：夏令营/预推免通知聚合（/保研 notice）
-
-### 触发
-用户说"查夏令营通知"、"搜预推免"、"/保研 notice"、"有哪些学校出通知了"
-
-### 工作流
-
-#### Step 1：确定查询范围
-```
-查询范围？
-  [A] 全部学校（~15 所）
-  [B] 指定学校（如：上交、浙大、华科）
-  [C] 仅查看缓存（不重新抓取）
-```
-
-#### Step 2：运行爬虫
+### Step 5：保存到题库（可选）
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/tools/notice_scraper.py \
-  --school {all | 上交,浙大,华科} \
-  --output data/notices/index.json \
-  {--refresh 如果需要强制刷新}
+python3 ${CLAUDE_SKILL_DIR}/tools/question_store.py --action save --file output/questions/interview_en_{timestamp}.md --session {姓名}_2026保研
 ```
-
-#### Step 3：补充语义解析
-爬虫完成批量抓取后，对尚未确定截止日期和关键信息的学校，使用 `WebFetch` 工具直接读取原始页面，做语义级提取。
-
-#### Step 4：汇总展示
-按截止日期排序，以表格形式展示：
-
-```markdown
-| 学校 | 学院 | 类型 | 截止日期 | 关键要求 | 链接 |
-|------|------|------|----------|----------|------|
-| 上交 | 机械与动力工程学院 | 夏令营 | 2026-06-30 | GPA 3.5+ | [链接](...) |
-| ...  | ...  | ...  | ...      | ...      | ...  |
-```
-
-同时写入 `data/notices/summary_{date}.md`。
+（中文问题同理保存）
 
 ---
 
-## 功能三：英文口语练习（/保研 practice）
+## 功能二：个人陈述生成（/保研 ps）
 
-### 前置条件
-题库中存在面试问题（运行过功能一并保存了英文问题）。
+参考 `${CLAUDE_SKILL_DIR}/prompts/personal_statement_cn.md`
 
-如果题库为空，自动引导用户先运行 `/保研 resume` 生成问题。
+1. 询问：目标学校、目标专业方向、字数偏好（1500/1800/2000）、侧重点（科研为主/全面发展）
+2. 基于简历内容生成 5 段式个人陈述（学术背景→科研经历→研究兴趣→择校理由→未来规划）
+3. 输出到 `output/ps/ps_{timestamp}.md`
 
-### 触发
-用户说"英文口语练习"、"/保研 practice"、"模拟英文面试"、"练习面试"
+---
 
-### 工作流
+## 功能三：联系导师邮件（/保研 email）
 
-#### Step 1：启动服务
+参考 `${CLAUDE_SKILL_DIR}/prompts/advisor_email_cn.md`
+
+1. 询问：导师姓名/职称/研究方向、具体论文或项目（学生读过的）、学生基本背景
+2. 生成 300-500 字学术邮件（含具体论文引用、匹配度展示、礼貌措辞）
+3. 输出到 `output/email/email_{school}_{timestamp}.md`
+
+---
+
+## 功能四：推荐信草稿（/保研 recommend）
+
+参考 `${CLAUDE_SKILL_DIR}/prompts/recommendation_letter_cn.md`
+
+1. 询问：推荐人类型（学术型/竞赛型）、希望突出的特质或具体事例
+2. 以教授视角生成 500-800 字推荐信，[待补充] 标记需填写处
+3. 输出到 `output/recommend/recommend_{type}_{timestamp}.md`
+
+---
+
+## 功能五：夏令营/预推免通知聚合（/保研 notice）
+
+### Step 1：确定查询范围
+```
+[A] 全部学校（18 所）[B] 指定学校 [C] 仅查看缓存
+```
+
+### Step 2：运行爬虫
+```bash
+python3 ${CLAUDE_SKILL_DIR}/tools/notice_scraper.py --school {all | 上交,浙大} --output data/notices/index.json {--refresh}
+```
+
+### Step 3：WebSearch 兜底
+读取 `data/notices/index.json`，找出 `scraped: false` + `needs_websearch: true` 的学校，对每个失败学校用 **WebSearch**：
+```
+"[学校名] 机械 [学院名] 夏令营 2026 通知"
+```
+从搜索结果提取结构化通知，写入缓存：
+```bash
+python3 ${CLAUDE_SKILL_DIR}/tools/notice_scraper.py --action merge-websearch --school 西交 --data '[{...}]'
+```
+
+### Step 4：汇总展示
+按截止日期排序表格展示。Dashboard 查看: `http://localhost:8765/notices.html`
+
+---
+
+## 功能六：笔试备考指南（/保研 exam）
+
+参考 `${CLAUDE_SKILL_DIR}/prompts/exam_prep.md` 和 `data/exam_topics.json`
+
+1. 询问：目标学校、专业方向、考试科目范围
+2. 基于学校风格（清华重理论/上交重综合/浙大重实践等）生成备考指南
+3. 包含：笔试概况、分科重点、典型题型、备考策略、模拟题
+4. 输出到 `output/exam/exam_prep_{school}_{timestamp}.md`
+
+---
+
+## 功能七：Offer 对比分析（/保研 compare）
+
+参考 `${CLAUDE_SKILL_DIR}/prompts/school_compare.md`
+
+1. 询问：2-5 所学校/Offer 信息
+2. 8 维评分（学术/导师/方向/地点/就业/奖助/环境/毕业要求）
+3. 生成对比表 + 雷达图描述 + 优劣总结 + 综合建议
+4. 输出到 `output/compare/compare_{timestamp}.md`
+
+---
+
+## 功能八：面试口语练习（/保研 practice）
+
+启动本地 Web 服务，在浏览器中进行中/英文面试练习。
+
+### Step 1：启动服务
 ```bash
 python3 ${CLAUDE_SKILL_DIR}/tools/web_server.py --port 8765
 ```
 
-#### Step 2：引导用户
+### Step 2：浏览器打开
+- 面试练习: `http://localhost:8765`
+- 通知看板: `http://localhost:8765/notices.html`
+- 模拟面试: `http://localhost:8765/interviewer.html`
+
+### 功能特性
+- 🌐 中/英文模式切换（点击页面顶部按钮）
+- 📹 摄像头录制 + 回放
+- ⏱️ 30 秒准备 + 90 秒作答
+- 🔒 隐私安全，所有数据在本地浏览器
+- 🤖 AI 点评按钮（录制后点击，语音转写→AI评估）
+
+---
+
+## 功能九：AI 面试反馈（/保研 feedback）
+
+1. 在面试练习页点击"🤖 AI 点评"，获得 Session ID
+2. 用户运行 `/保研 feedback`，Claude 读取反馈数据文件
+3. 从三个维度评估：
+   - **内容质量**（1-10）：观点完整性、论据支撑、专业深度
+   - **语言流利度**（1-10）：表达流畅、用词准确、语法
+   - **逻辑结构**（1-10）：结构清晰、论证有序、回答组织
+4. 给出综合评分和改进建议
+5. 读取的文件: `data/feedback/feedback_{session_id}.json`
+
+---
+
+## 功能十：AI 模拟面试官（/保研 mock）
+
+1. 启动 Web 服务（如未启动）
+2. Claude 扮演面试官，web 页面显示对话记录
+3. 面试模式：提问→用户回答→追问(3-4轮)→下一题→综合评估
+4. 会话数据存储在 `data/interview_session_{id}.json`
+5. 面试完成后给出综合评估
+
+页面: `http://localhost:8765/interviewer.html`
+
+---
+
+## 功能十一：面试经验搜索（/保研 experience）
+
+1. 询问目标学校（如"上交"、"浙大"）或"全部"
+2. WebSearch: `"[学校名] 机械 保研 面试经验 2025 2026"`
+3. 从知乎/CSDN/保研论坛提取结构化面经
+4. 保存到经验库：
+```bash
+python3 ${CLAUDE_SKILL_DIR}/tools/experience_store.py --action save --school 上交 --year 2026 --data '{...}'
 ```
-英文面试练习已启动！请在浏览器打开：
-
-  👉 http://localhost:8765
-
-功能说明：
-  - 摄像头模拟真实面试场景
-  - 题目来自你的英文面试题库
-  - 每题 30 秒准备 + 90 秒作答
-  - 录制内容仅保存在你的浏览器中，不上传
-  - 支持回放查看自己的表现
-
-按 Ctrl+C 停止服务。
-```
-
-#### Step 3：网页端体验
-网页详情参考 `web/assets/README.md`。
+5. 也可用 `--action list` / `--action export` 查看和导出
 
 ---
 
@@ -186,11 +217,11 @@ python3 ${CLAUDE_SKILL_DIR}/tools/web_server.py --port 8765
 
 | 命令 | 说明 |
 |------|------|
-| `/保研 list-questions` | 列出题库中所有问题 |
-| `/保研 list-notices` | 列出缓存的通知 |
+| `/保研 list-questions` | 列出题库 |
+| `/保研 list-notices` | 列出通知缓存 |
 | `/保研 clear-notices` | 清除通知缓存 |
-| `/保研 serve` | 启动英文练习网页 |
-| `/保研 help` | 显示帮助信息 |
+| `/保研 serve` | 启动 Web 服务 |
+| `/保研 help` | 帮助 |
 
 ---
 
@@ -198,29 +229,39 @@ python3 ${CLAUDE_SKILL_DIR}/tools/web_server.py --port 8765
 
 ```
 保研skill/
-├── SKILL.md                    # 本文件
-├── prompts/                    # 提示词模板
-│   ├── resume_translate_en.md
-│   ├── interview_questions_cn.md
-│   ├── interview_questions_en.md
-│   └── notice_analysis.md
-├── tools/                      # Python 工具
-│   ├── notice_scraper.py
-│   ├── question_store.py
-│   └── web_server.py
-├── config/
-│   └── schools.yaml            # 学校配置
-├── data/                       # 持久化数据
-│   ├── notices/
-│   └── questions/
-├── output/                     # 用户面向输出
-│   ├── resume/
-│   └── questions/
-└── web/                        # 英文练习网页
-    ├── index.html
+├── SKILL.md                       # 本文件 (v2.0)
+├── prompts/                       # 提示词模板 (10个)
+│   ├── resume_translate_en.md     # 英文简历翻译
+│   ├── interview_questions_cn.md  # 中文面试题生成
+│   ├── interview_questions_en.md  # 英文面试题生成
+│   ├── notice_analysis.md         # 通知语义解析
+│   ├── personal_statement_cn.md   # 个人陈述 (NEW)
+│   ├── advisor_email_cn.md        # 联系导师邮件 (NEW)
+│   ├── recommendation_letter_cn.md # 推荐信 (NEW)
+│   ├── exam_prep.md               # 笔试备考 (NEW)
+│   ├── school_compare.md          # Offer对比 (NEW)
+│   └── experience_summary.md      # 面经提取 (NEW)
+├── tools/                         # Python 工具 (4个)
+│   ├── notice_scraper.py          # 通知爬虫 + WebSearch合并
+│   ├── question_store.py          # 题库管理
+│   ├── experience_store.py        # 面经库管理 (NEW)
+│   └── web_server.py              # Web服务 (v2升级)
+├── config/schools.yaml            # 18校配置
+├── data/                          # 持久化数据
+│   ├── notices/index.json
+│   ├── questions/index.json
+│   ├── experiences/index.json     # (NEW)
+│   ├── feedback/                  # (NEW)
+│   └── exam_topics.json           # (NEW)
+├── output/                        # 输出文件
+│   ├── resume/     ├── questions/
+│   ├── ps/         ├── email/       # (NEW)
+│   ├── recommend/  ├── exam/        # (NEW)
+│   └── compare/                    # (NEW)
+└── web/                           # 前端页面
+    ├── index.html                 # 面试练习 (支持中英文)
+    ├── notices.html               # 通知Dashboard
+    ├── interviewer.html           # 模拟面试官 (NEW)
     ├── css/style.css
-    └── js/
-        ├── app.js
-        ├── camera.js
-        └── question_loader.js
+    └── js/ (app.js, camera.js, question_loader.js)
 ```

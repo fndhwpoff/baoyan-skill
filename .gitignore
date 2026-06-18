@@ -14,12 +14,26 @@ data/notices/*
 !data/notices/.gitkeep
 data/questions/*
 !data/questions/.gitkeep
+data/experiences/*
+!data/experiences/.gitkeep
+data/feedback/*
+!data/feedback/.gitkeep
 
 # 输出目录（用户生成的文件，保留 .gitkeep）
 output/resume/*
 !output/resume/.gitkeep
 output/questions/*
 !output/questions/.gitkeep
+output/ps/*
+!output/ps/.gitkeep
+output/email/*
+!output/email/.gitkeep
+output/recommend/*
+!output/recommend/.gitkeep
+output/exam/*
+!output/exam/.gitkeep
+output/compare/*
+!output/compare/.gitkeep
 
 # 用户个人文件
 *.pdf

@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>保研英文面试练习</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>保研面试练习</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -11,8 +11,11 @@
 
         <!-- 顶部导航 -->
         <header class="app-header">
-            <h1>🎓 保研英文面试练习</h1>
-            <span class="subtitle">English Interview Practice</span>
+            <h1>🎓 保研面试练习</h1>
+            <span class="subtitle">Interview Practice</span>
+            <div style="margin-top:8px">
+                <button id="btn-lang-toggle" class="btn btn-secondary btn-sm">🌐 English</button>
+            </div>
         </header>
 
         <!-- 主区域 -->
@@ -22,15 +25,15 @@
             <section id="state-idle" class="state-panel active">
                 <div class="hero">
                     <div class="hero-icon">🎤</div>
-                    <h2>准备好练习英文面试了吗？</h2>
+                    <h2>准备好练习保研面试了吗？</h2>
                     <p class="hero-desc">
-                        模拟真实面试场景，使用摄像头进行英文问答练习。<br>
+                        模拟真实面试场景，使用摄像头进行问答练习。<br>
                         所有录制内容仅保存在你的浏览器中，不会上传。
                     </p>
                     <div class="feature-list">
                         <div class="feature-item">
                             <span class="feature-icon">📋</span>
-                            <span>显示英文面试题</span>
+                            <span>显示面试题</span>
                         </div>
                         <div class="feature-item">
                             <span class="feature-icon">⏱️</span>
@@ -85,10 +88,6 @@
                         <p class="question-count-info">
                             已加载 <strong id="total-questions">0</strong> 道题目
                         </p>
-                        <div class="timer-display" id="timer-display">
-                            <span class="timer-value" id="timer-value">90</span>
-                            <span class="timer-label" id="timer-label">秒</span>
-                        </div>
                         <button id="btn-next-question" class="btn btn-primary">
                             开始第一题
                         </button>
@@ -137,7 +136,18 @@
                             <button id="btn-skip" class="btn btn-secondary">跳过</button>
                             <button id="btn-start-recording" class="btn btn-primary">开始作答</button>
                             <button id="btn-stop-recording" class="btn btn-danger hidden">结束作答</button>
+                            <button id="btn-feedback" class="btn btn-secondary hidden">🤖 AI 点评</button>
                             <button id="btn-next-after" class="btn btn-primary hidden">下一题</button>
+                        </div>
+                        <!-- AI 反馈面板 -->
+                        <div id="feedback-panel" class="hidden" style="background:var(--bg-card);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow);margin-top:12px;">
+                            <h4 style="margin-bottom:8px">🤖 AI 反馈</h4>
+                            <p style="font-size:0.85rem;color:var(--text-secondary)" id="feedback-hint-text">
+                                请在 Claude Code 中输入 <code>/保研 feedback</code> 获取 AI 点评
+                            </p>
+                            <p style="font-size:0.75rem;color:var(--text-secondary);margin-top:4px">
+                                Session: <span id="feedback-session-id">-</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -174,7 +184,7 @@
 
         <!-- 底部 -->
         <footer class="app-footer">
-            <span>保研skill · English Interview Practice</span>
+            <span>保研skill · 面试练习</span>
             <span class="footer-divider">|</span>
             <span>录制内容仅在本地浏览器中，不会上传</span>
         </footer>

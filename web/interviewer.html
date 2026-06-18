@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 模拟面试官 — 保研skill</title>
+    <style>
+        :root {
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text: #1a1a2e;
+            --text2: #6b7280;
+            --primary: #4f46e5;
+            --success: #059669;
+            --danger: #dc2626;
+            --border: #e5e7eb;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --font: -apple-system, "Microsoft YaHei", sans-serif;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e1b4b, #4f46e5);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 { font-size: 1.3rem; }
+        .header .session-id { font-size: 0.8rem; opacity: 0.8; }
+
+        .container {
+            flex: 1;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 60px);
+        }
+
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .message.interviewer {
+            align-self: flex-start;
+            background: var(--card);
+            box-shadow: var(--shadow);
+            border-bottom-left-radius: 4px;
+        }
+        .message.student {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.system {
+            align-self: center;
+            background: #f3f4f6;
+            color: var(--text2);
+            font-size: 0.82rem;
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        .message-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            opacity: 0.7;
+        }
+
+        .status-bar {
+            padding: 12px 20px;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: var(--text2);
+        }
+        .status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        .status-dot.waiting { background: #d97706; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        .evaluation-card {
+            background: var(--card);
+            margin: 16px 20px;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+        .evaluation-card h3 { margin-bottom: 12px; }
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .score-bar-bg {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin: 0 12px;
+            overflow: hidden;
+        }
+        .score-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .score-value { font-weight: 700; min-width: 30px; text-align: right; }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text2);
+        }
+        .empty-state .icon { font-size: 3rem; }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        @media (max-width: 480px) {
+            .message { max-width: 90%; font-size: 0.9rem; }
+            .header h1 { font-size: 1.1rem; }
+            .container { height: calc(100vh - 52px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🤖 AI 模拟面试官</h1>
+        <span class="session-id" id="session-display">等待连接...</span>
+    </div>
+
+    <div class="container">
+        <div class="chat-area" id="chat-area">
+            <div class="empty-state" id="empty-state">
+                <div class="icon">🎤</div>
+                <h3>AI 模拟面试</h3>
+                <p>请在 Claude Code 中输入 <code>/保研 mock</code> 启动面试</p>
+                <p style="font-size:0.85rem">面试官会基于你的回答进行追问，模拟真实面试场景</p>
+                <button class="btn btn-primary" onclick="loadSession()">🔄 检查会话</button>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <span class="status-dot" id="status-dot"></span>
+            <span id="status-text">未连接</span>
+            <span style="margin-left:auto;font-size:0.8rem" id="question-progress"></span>
+        </div>
+    </div>
+
+<script>
+let sessionId = null;
+let pollTimer = null;
+let lastMessageCount = 0;
+let currentStatus = 'idle';
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 尝试从 URL 获取 session ID
+    const params = new URLSearchParams(window.location.search);
+    sessionId = params.get('session');
+    if (sessionId) {
+        document.getElementById('session-display').textContent = 'Session: ' + sessionId;
+        startPolling();
+    }
+});
+
+function loadSession() {
+    // 尝试从 API 获取最新会话
+    fetch('/api/interview?session=latest')
+        .then(r => r.json())
+        .then(data => {
+            if (data.session_id) {
+                sessionId = data.session_id;
+                document.getElementById('session-display').textContent = 'Session: ' + sessionId;
+                document.getElementById('empty-state').style.display = 'none';
+                renderConversation(data.conversation || []);
+                updateStatus(data.status || 'waiting');
+                startPolling();
+            } else {
+                document.getElementById('status-text').textContent = '暂无活跃会话，请在 Claude Code 中运行 /保研 mock';
+                document.getElementById('status-dot').className = 'status-dot waiting';
+            }
+        })
+        .catch(e => {
+            document.getElementById('status-text').textContent = '服务未启动，请先运行 /保研 serve';
+            document.getElementById('status-dot').className = 'status-dot waiting';
+        });
+}
+
+function startPolling() {
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(pollSession, 3000);
+}
+
+function pollSession() {
+    if (!sessionId) return;
+    fetch('/api/interview?session=' + sessionId)
+        .then(r => r.json())
+        .then(data => {
+            const conversation = data.conversation || [];
+            if (conversation.length > lastMessageCount) {
+                renderConversation(conversation);
+                lastMessageCount = conversation.length;
+                // 滚动到底部
+                const chatArea = document.getElementById('chat-area');
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+            updateStatus(data.status || 'waiting');
+            if (data.current_question_index !== undefined) {
+                document.getElementById('question-progress').textContent =
+                    'Q' + ((data.current_question_index || 0) + 1) + '/' + (data.questions?.length || '?');
+            }
+            // 显示评估
+            if (data.evaluation) {
+                renderEvaluation(data.evaluation);
+            }
+        })
+        .catch(() => {});
+}
+
+function renderConversation(conversation) {
+    if (!conversation || conversation.length === 0) return;
+    document.getElementById('empty-state').style.display = 'none';
+    const chatArea = document.getElementById('chat-area');
+    // 清空并重新渲染（只保留chat messages，移除empty state）
+    const existingMessages = chatArea.querySelectorAll('.message, .system-message');
+    const messageCount = existingMessages.length;
+
+    // 增量渲染新消息
+    for (let i = messageCount; i < conversation.length; i++) {
+        const msg = conversation[i];
+        const div = document.createElement('div');
+        if (msg.role === 'system') {
+            div.className = 'message system';
+            div.textContent = msg.text;
+        } else if (msg.role === 'interviewer') {
+            div.className = 'message interviewer';
+            div.innerHTML = '<div class="message-label">🎓 面试官</div>' + escapeHtml(msg.text);
+        } else if (msg.role === 'student') {
+            div.className = 'message student';
+            div.innerHTML = '<div class="message-label">👤 你</div>' + escapeHtml(msg.text);
+        }
+        chatArea.appendChild(div);
+    }
+    chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+function renderEvaluation(evalData) {
+    // 移除旧评估
+    const old = document.getElementById('evaluation-card');
+    if (old) old.remove();
+
+    const card = document.createElement('div');
+    card.className = 'evaluation-card';
+    card.id = 'evaluation-card';
+    card.innerHTML = `
+        <h3>📊 面试评估</h3>
+        ${evalData.scores ? `
+            ${scoreRow('内容质量', evalData.scores.content || 0)}
+            ${scoreRow('语言流利度', evalData.scores.fluency || 0)}
+            ${scoreRow('逻辑结构', evalData.scores.logic || 0)}
+            <div class="score-row" style="font-weight:700;margin-top:8px">
+                <span>综合评分</span>
+                <span class="score-value">${evalData.overall || '?'} / 10</span>
+            </div>
+        ` : ''}
+        ${evalData.suggestions ? `<div style="margin-top:12px"><strong>改进建议：</strong><ul>${evalData.suggestions.map(s => '<li>'+s+'</li>').join('')}</ul></div>` : ''}
+        ${evalData.strengths ? `<div style="margin-top:8px"><strong>亮点：</strong><ul>${evalData.strengths.map(s => '<li>'+s+'</li>').join('')}</ul></div>` : ''}
+    `;
+    document.getElementById('chat-area').appendChild(card);
+}
+
+function scoreRow(label, score) {
+    const pct = Math.min(100, Math.max(0, (score / 10) * 100));
+    return `
+        <div class="score-row">
+            <span>${label}</span>
+            <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%"></div></div>
+            <span class="score-value">${score}</span>
+        </div>`;
+}
+
+function updateStatus(status) {
+    const dot = document.getElementById('status-dot');
+    const text = document.getElementById('status-text');
+    switch (status) {
+        case 'ongoing':
+            dot.className = 'status-dot';
+            text.textContent = '面试进行中...';
+            break;
+        case 'waiting_for_answer':
+            dot.className = 'status-dot waiting';
+            text.textContent = '等待你的回答...';
+            break;
+        case 'evaluating':
+            dot.className = 'status-dot waiting';
+            text.textContent = 'AI 评估中...';
+            break;
+        case 'complete':
+            dot.className = 'status-dot';
+            text.textContent = '面试结束';
+            break;
+        default:
+            dot.className = 'status-dot waiting';
+            text.textContent = '等待面试官...';
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/\n/g, '<br>');
+}
+
+// 初始化加载
+setTimeout(loadSession, 500);
+</script>
+</body>
+</html>

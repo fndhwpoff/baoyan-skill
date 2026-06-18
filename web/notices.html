@@ -205,6 +205,23 @@
         .notice-type.pre { background: #fef3c7; color: #92400e; }
         .notice-type.other { background: #f3f4f6; color: #374151; }
 
+        .source-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        .source-badge.scraper { background: #d1fae5; color: #065f46; }
+        .source-badge.websearch { background: #dbeafe; color: #1e40af; }
+        .source-badge.cache { background: #f3f4f6; color: #6b7280; }
+
+        .urgency-safe { color: #059669 !important; font-weight: 700; }
+        .urgency-warning { color: #d97706 !important; font-weight: 700; }
+        .urgency-danger { color: #dc2626 !important; font-weight: 700; }
+        .urgency-expired { color: #9ca3af !important; text-decoration: line-through; }
+        .stat-icon.urgent { background: #fee2e2; }
+
         .notice-link {
             color: var(--primary);
             text-decoration: none;
@@ -258,12 +275,32 @@
         .toast.error { border-left-color: var(--danger); }
 
         /* Responsive */
+        .table-scroll {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .table-scroll table { min-width: 750px; }
         @media (max-width: 768px) {
             .header { padding: 20px; }
             .header-left h1 { font-size: 1.3rem; }
             .container { padding: 12px; }
             td, th { padding: 10px 12px; font-size: 0.8rem; }
             .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .header { padding: 16px; flex-direction: column; align-items: flex-start; }
+            .header-left h1 { font-size: 1.15rem; }
+            .container { padding: 8px; }
+            .stats-bar { grid-template-columns: 1fr; }
+            .stat-card { padding: 12px 14px; }
+            .stat-value { font-size: 1.2rem; }
+            .toolbar { flex-direction: column; gap: 8px; }
+            .search-box { width: 100%; }
+            .filter-tags { gap: 4px; }
+            .filter-tag { padding: 5px 10px; font-size: 0.72rem; }
+            td, th { padding: 8px 10px; font-size: 0.75rem; }
+            .btn { min-height: 44px; padding: 10px 16px; font-size: 0.9rem; touch-action: manipulation; }
+            .btn-sm { min-height: 36px; padding: 6px 12px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -304,6 +341,10 @@
                 <div class="stat-icon pre">📝</div>
                 <div><div class="stat-value" id="stat-pre">0</div><div class="stat-label">预推免/其他</div></div>
             </div>
+            <div class="stat-card">
+                <div class="stat-icon urgent">⏰</div>
+                <div><div class="stat-value" id="stat-urgent">0</div><div class="stat-label">7天内截止</div></div>
+            </div>
         </div>
 
         <!-- Toolbar -->
@@ -315,6 +356,7 @@
                 <span class="filter-tag" data-filter="pre" onclick="setFilter('pre', this)">📝 预推免</span>
                 <span class="filter-tag" data-filter="C9" onclick="setFilter('C9', this)">⭐ C9</span>
                 <span class="filter-tag" data-filter="985" onclick="setFilter('985', this)">🔵 985</span>
+                <span class="filter-tag" data-filter="urgent" onclick="setFilter('urgent', this)">⏰ 即将截止</span>
             </div>
         </div>
 
@@ -335,7 +377,7 @@
 // ============ State ============
 let notices = [];
 let currentFilter = 'all';
-let sortKey = 'school';
+let sortKey = 'daysRemaining';
 let sortAsc = true;
 
 // ============ Init ============
@@ -368,12 +410,21 @@ function transformData(data) {
     for (const [short, schoolData] of Object.entries(schools)) {
         const config = schoolData._config || {};
         const schoolNotices = schoolData.notices || [];
+        const isScraped = schoolData.scraped !== false && schoolData.notices && schoolData.notices.length > 0;
         for (const n of schoolNotices) {
             // Guess type from keywords
             let type = 'other';
             const kw = (n.matched_keywords || []).join(' ').toLowerCase() + (n.title || '').toLowerCase();
             if (/夏令营|暑期学校|summer camp/i.test(kw)) type = 'summer';
             else if (/预推免|推免|免试/i.test(kw)) type = 'pre';
+
+            // Source
+            let source = n.source || (isScraped ? 'scraper' : 'cache');
+            if (!n.source && !isScraped) source = 'cache';
+
+            // Deadline
+            const deadline = n.deadline || null;
+            const daysRemaining = getDaysRemaining(deadline);
 
             result.push({
                 school: config.name || short,
@@ -384,10 +435,26 @@ function transformData(data) {
                 url: n.url || '#',
                 type: type,
                 keywords: n.matched_keywords || [],
+                source: source,
+                deadline: deadline,
+                daysRemaining: daysRemaining,
             });
         }
     }
     return result;
+}
+
+function getDaysRemaining(deadlineStr) {
+    if (!deadlineStr) return null;
+    try {
+        const deadline = new Date(deadlineStr);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        deadline.setHours(0, 0, 0, 0);
+        return Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+    } catch (e) {
+        return null;
+    }
 }
 
 function updateStats() {
@@ -395,6 +462,7 @@ function updateStats() {
     document.getElementById('stat-total').textContent = notices.length;
     document.getElementById('stat-summer').textContent = notices.filter(n => n.type === 'summer').length;
     document.getElementById('stat-pre').textContent = notices.filter(n => n.type !== 'summer').length;
+    document.getElementById('stat-urgent').textContent = notices.filter(n => n.daysRemaining !== null && n.daysRemaining >= 0 && n.daysRemaining <= 7).length;
 }
 
 function setFilter(filter, el) {
@@ -421,9 +489,14 @@ function getFiltered() {
     else if (currentFilter === 'pre') filtered = filtered.filter(n => n.type !== 'summer');
     else if (currentFilter === 'C9') filtered = filtered.filter(n => n.level === 'C9');
     else if (currentFilter === '985') filtered = filtered.filter(n => n.level.includes('985'));
+    else if (currentFilter === 'urgent') filtered = filtered.filter(n => n.daysRemaining !== null && n.daysRemaining >= 0 && n.daysRemaining <= 14);
 
     filtered.sort((a, b) => {
-        let va = a[sortKey] || '', vb = b[sortKey] || '';
+        let va = a[sortKey], vb = b[sortKey];
+        // Handle null values for daysRemaining (sort nulls to end)
+        if (va === null && vb === null) return 0;
+        if (va === null) return 1;
+        if (vb === null) return -1;
         if (typeof va === 'string') va = va.toLowerCase();
         if (typeof vb === 'string') vb = vb.toLowerCase();
         return va > vb ? (sortAsc ? 1 : -1) : va < vb ? (sortAsc ? -1 : 1) : 0;
@@ -446,24 +519,39 @@ function renderTable() {
     const levelTag = (l) => l === 'C9' ? 'c9' : 'strong';
     const typeTag = (t) => t === 'summer' ? 'summer' : t === 'pre' ? 'pre' : 'other';
     const typeLabel = (t) => t === 'summer' ? '夏令营' : t === 'pre' ? '预推免' : '其他';
+    const sourceLabel = (s) => s === 'scraper' ? '🟢爬虫' : s === 'websearch' ? '🔵搜索' : '⚪缓存';
+    const sourceClass = (s) => s === 'scraper' ? 'scraper' : s === 'websearch' ? 'websearch' : 'cache';
 
-    let html = `<table>
+    function urgencyInfo(days) {
+        if (days === null || days === undefined) return { label: '未知', cls: '' };
+        if (days < 0) return { label: '已截止', cls: 'urgency-expired' };
+        if (days <= 7) return { label: days + '天', cls: 'urgency-danger' };
+        if (days <= 30) return { label: days + '天', cls: 'urgency-warning' };
+        return { label: days + '天', cls: 'urgency-safe' };
+    }
+
+    let html = `<div class="table-scroll"><table>
         <thead><tr>
             <th onclick="sortBy('school')">学校 <span class="sort-arrow">${sortKey==='school' ? (sortAsc?'▲':'▼') : ''}</span></th>
             <th onclick="sortBy('type')">类型 <span class="sort-arrow">${sortKey==='type' ? (sortAsc?'▲':'▼') : ''}</span></th>
             <th>通知标题</th>
             <th>学院</th>
+            <th onclick="sortBy('daysRemaining')">剩余天数 <span class="sort-arrow">${sortKey==='daysRemaining' ? (sortAsc?'▲':'▼') : ''}</span></th>
+            <th onclick="sortBy('source')">来源 <span class="sort-arrow">${sortKey==='source' ? (sortAsc?'▲':'▼') : ''}</span></th>
         </tr></thead><tbody>`;
 
     for (const n of filtered) {
+        const ur = urgencyInfo(n.daysRemaining);
         html += `<tr>
             <td><span class="school-tag ${levelTag(n.level)}">${n.school}</span></td>
             <td><span class="notice-type ${typeTag(n.type)}">${typeLabel(n.type)}</span></td>
             <td><a class="notice-link" href="${n.url}" target="_blank">${n.title}</a></td>
             <td style="font-size:0.82rem;color:var(--text2)">${n.college}</td>
+            <td><span class="${ur.cls}">${ur.label}</span>${n.deadline ? '<br><small style="color:var(--text2)">' + n.deadline + '</small>' : ''}</td>
+            <td><span class="source-badge ${sourceClass(n.source)}">${sourceLabel(n.source)}</span></td>
         </tr>`;
     }
-    html += '</tbody></table>';
+    html += '</tbody></table></div>';
     document.getElementById('table-container').innerHTML = html;
 }
 

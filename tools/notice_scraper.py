@@ -4,13 +4,14 @@
 从各校机械学院通知页抓取最新通知，提取标题、日期、链接等关键信息。
 采用两阶段策略：
   1. Python 批量抓取 HTML → 通用正文提取 → 缓存到本地
-  2. Claude (WebFetch) 对重点学校做语义解析（截止日期、申请条件等）
+  2. Claude (WebSearch) 对抓取失败的学校做Web搜索补充
 
 用法:
   python notice_scraper.py --school all
   python notice_scraper.py --school 上交,浙大,华科
   python notice_scraper.py --school all --refresh  # 强制刷新
   python notice_scraper.py --school all --output data/notices/index.json
+  python notice_scraper.py --action merge-websearch --school 西交 --data '<json>'
 """
 
 import argparse
@@ -144,6 +145,7 @@ def extract_notice_links(html, base_url):
                 "title": text,
                 "url": full_url,
                 "matched_keywords": matched,
+                "source": "scraper",
             })
 
     # 如果没有精确匹配，尝试提取所有看起来像通知的链接
@@ -165,6 +167,7 @@ def extract_notice_links(html, base_url):
                     "url": full_url,
                     "date_hint": date_text,
                     "matched_keywords": [],
+                    "source": "scraper",
                 })
 
     return notices[:20]  # 最多取20条
@@ -217,7 +220,11 @@ def extract_page_content(html):
 
 
 def scrape_school(school, refresh=False, cache=None, delay=2):
-    """抓取单个学校的通知"""
+    """抓取单个学校的通知
+
+    返回值增加 scraped (bool) 和 needs_websearch (bool) 字段，
+    供下游 (SKILL.md / web_server) 判断是否需要 WebSearch 兜底。
+    """
     name = school["name"]
     short = school.get("short", name)
     urls = school.get("urls", {})
@@ -238,7 +245,14 @@ def scrape_school(school, refresh=False, cache=None, delay=2):
 
     if not notice_url:
         print(f"  [跳过] 无通知页URL")
-        return {"fetched_at": datetime.now().isoformat(), "notice_url": None, "notices": [], "error": "无URL"}
+        return {
+            "fetched_at": datetime.now().isoformat(),
+            "notice_url": None,
+            "notices": [],
+            "error": "无URL",
+            "scraped": False,
+            "needs_websearch": False,
+        }
 
     # 获取页面
     time.sleep(delay + random.uniform(0, 1))
@@ -250,6 +264,8 @@ def scrape_school(school, refresh=False, cache=None, delay=2):
             "notice_url": notice_url,
             "notices": [],
             "error": "页面获取失败",
+            "scraped": False,
+            "needs_websearch": True,
         }
 
     # 提取通知链接
@@ -260,6 +276,7 @@ def scrape_school(school, refresh=False, cache=None, delay=2):
     if not notices:
         page_text = extract_page_content(html)
 
+    has_notices = len(notices) > 0
     result = {
         "fetched_at": datetime.now().isoformat(),
         "notice_url": notice_url,
@@ -268,6 +285,8 @@ def scrape_school(school, refresh=False, cache=None, delay=2):
         "notices": notices if notices else [],
         "page_text_snippet": page_text[:1000] if page_text else "",
         "error": None if (notices or page_text) else "未能提取到通知内容",
+        "scraped": has_notices,
+        "needs_websearch": True if ((not has_notices) and notice_url) else False,
     }
 
     print(f"  [结果] 提取到 {len(notices)} 条通知链接")
@@ -275,6 +294,44 @@ def scrape_school(school, refresh=False, cache=None, delay=2):
         print(f"    - {n['title'][:60]}")
 
     return result
+
+
+def merge_websearch_results(school_short, websearch_notices):
+    """将 WebSearch 结果合并到通知缓存中。
+
+    school_short: 学校简称 (如 '西交')
+    websearch_notices: list of notice dicts, each with at least:
+        - title: str
+        - url: str
+        可选: deadline (ISO date), type (summer/pre/other), keywords, college
+    """
+    cache = load_cache()
+
+    existing = cache.get("schools", {}).get(school_short, {})
+    existing_notices = existing.get("notices", [])
+
+    # 标记为 websearch 来源
+    for n in websearch_notices:
+        n["source"] = "websearch"
+        # 避免重复（按URL去重）
+        existing_urls = {e.get("url", "") for e in existing_notices}
+        if n.get("url") not in existing_urls:
+            existing_notices.append(n)
+
+    existing["notices"] = existing_notices
+    existing["notice_count"] = len(existing_notices)
+    existing["fetched_at"] = datetime.now().isoformat()
+    # 如果之前是失败状态，现在修正
+    if not existing.get("scraped"):
+        existing["scraped"] = True
+    existing["needs_websearch"] = False  # 已通过 WebSearch 补充
+    existing["websearch_completed"] = True
+
+    cache["schools"][school_short] = existing
+    save_cache(cache)
+
+    print(f"[WebSearch合并] {school_short}: +{len(websearch_notices)} 条，共 {len(existing_notices)} 条")
+    return cache
 
 
 def scrape_all(schools_config, target_schools="all", refresh=False):
@@ -308,15 +365,18 @@ def scrape_all(schools_config, target_schools="all", refresh=False):
         try:
             result = scrape_school(school, refresh=refresh, cache=cache, delay=delay)
             results[school["short"]] = result
-            if result.get("error"):
-                fail_count += 1
-            else:
+            if result.get("scraped"):
                 success_count += 1
+            else:
+                fail_count += 1
         except Exception as e:
             print(f"  [异常] {e}")
             results[school["short"]] = {
                 "fetched_at": datetime.now().isoformat(),
                 "error": str(e),
+                "notices": [],
+                "scraped": False,
+                "needs_websearch": True,
             }
             fail_count += 1
 
@@ -325,7 +385,7 @@ def scrape_all(schools_config, target_schools="all", refresh=False):
     save_cache(cache)
 
     print(f"\n{'='*50}")
-    print(f"抓取完成: {success_count} 成功, {fail_count} 失败")
+    print(f"抓取完成: {success_count} 成功(有通知), {fail_count} 失败(需WebSearch)")
     print(f"数据保存至: {INDEX_FILE}")
 
     return results
@@ -347,7 +407,9 @@ def print_summary(results, schools_config):
         error = result.get("error")
         total_notices += count
 
-        status = "[OK]" if not error else "[FAIL]"
+        scraped = result.get("scraped", True)
+        source_label = "[OK]" if scraped else "[NEED-WS]"
+        status = source_label if not error else f"[FAIL] {error}"
         print(f"\n{status} {name} ({short}) — {count} notices")
         if error:
             print(f"   Error: {error}")
@@ -355,7 +417,8 @@ def print_summary(results, schools_config):
         for notice in result.get("notices", [])[:3]:
             keywords = ", ".join(notice.get("matched_keywords", []))
             kw_str = f" [{keywords}]" if keywords else ""
-            print(f"   * {notice['title'][:70]}{kw_str}")
+            src = notice.get("source", "scraper")
+            print(f"   * [{src}] {notice['title'][:70]}{kw_str}")
             print(f"     {notice['url']}")
 
     print(f"\n{'='*70}")
@@ -366,8 +429,13 @@ def main():
     global INDEX_FILE, CONFIG_FILE
 
     parser = argparse.ArgumentParser(description="保研skill — 通知爬虫")
+    parser.add_argument("--action", default="scrape",
+                        choices=["scrape", "merge-websearch"],
+                        help="操作类型: scrape=抓取, merge-websearch=合并WebSearch结果")
     parser.add_argument("--school", default="all",
                         help="学校简称，逗号分隔（如 '上交,浙大,华科'），或 'all' 抓取全部")
+    parser.add_argument("--data", default=None,
+                        help="merge-websearch时传入的JSON数据字符串")
     parser.add_argument("--refresh", action="store_true",
                         help="强制刷新，忽略缓存")
     parser.add_argument("--output", default=None,
@@ -383,6 +451,19 @@ def main():
         INDEX_FILE = Path(args.output)
     if args.config:
         CONFIG_FILE = Path(args.config)
+
+    # 处理 merge-websearch 操作
+    if args.action == "merge-websearch":
+        if not args.data:
+            print("[错误] --action merge-websearch 需要 --data 参数")
+            sys.exit(1)
+        try:
+            websearch_notices = json.loads(args.data)
+        except json.JSONDecodeError as e:
+            print(f"[错误] JSON 解析失败: {e}")
+            sys.exit(1)
+        merge_websearch_results(args.school, websearch_notices)
+        return
 
     config = load_config()
 
