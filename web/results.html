@@ -165,7 +165,9 @@ function renderFileList() {
     files.forEach(f => {
         const cat = CATEGORIES[f.category] || {icon:'📋',label:f.category};
         const date = f.date ? new Date(f.date).toLocaleString('zh-CN') : '';
-        html += `<div class="file-card" onclick="loadPreview('${f.path}')">
+        // Normalize Windows backslashes + escape for HTML attribute
+        const safePath = f.path.replace(/\\/g, '/');
+        html += `<div class="file-card" data-path="${safePath.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}" onclick="loadPreview(this.dataset.path)">
             <div class="file-name">${cat.icon} ${f.name}</div>
             <div class="file-meta">📁 ${cat.label} · ${date} · ${f.size || ''}</div>
         </div>`;
@@ -175,10 +177,11 @@ function renderFileList() {
 }
 
 async function loadPreview(path) {
+    if (!path) return;
     document.querySelectorAll('.file-card').forEach(el => el.classList.remove('active'));
-    const cards = document.querySelectorAll('.file-card');
-    const idx = allFiles.findIndex(f => f.path === path);
-    if (idx >= 0 && cards[idx]) cards[idx].classList.add('active');
+    // Find and highlight current card
+    const card = document.querySelector(`.file-card[data-path="${path.replace(/"/g,'&quot;')}"]`);
+    if (card) card.classList.add('active');
 
     try {
         const resp = await fetch(`/api/results/content?path=${encodeURIComponent(path)}`);
