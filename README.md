@@ -1,10 +1,11 @@
 # 保研 Skill v3.0
 
 > 机械工程保研全流程助手：材料准备 · 信息搜集 · 面试练习，一站搞定  
-> Claude Code Skill · 开源 · 零数据上传
+> Codex / Claude Code 双平台 Skill · 开源 · 零数据上传
 
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-blueviolet)](https://claude.ai/code)
+[![Codex](https://img.shields.io/badge/Codex-Compatible-10a37f.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)]()
 
@@ -23,7 +24,7 @@
 | &#127968; **总门户** | `/` | Hero大屏统计 · 全部功能卡片 · 一键跳转各工具 |
 | &#127916; 面试练习 | `/practice.html` | 中英文切换 · 摄像头录制 · 回放复盘 |
 | &#128225; 通知看板 | `/notices.html` | 18校通知 · 截止倒计时 · 一键刷新 |
-| &#128194; **成果中心** | `/results.html` | 7校全套材料 · 按学校分组 · HTML预览 · PDF打印 |
+| &#128194; **成果中心** | `/results.html` | 7校全套材料 · 按学校分组 · HTML预览 · 打印PDF |
 
 > 打开总网站即可看到全部功能入口，无需记忆多个地址。
 
@@ -53,16 +54,25 @@
 | 📡 通知聚合 | 18校夏令营/科研营/预推免自动抓取 + WebSearch兜底，优先2026 | `/保研 notice` |
 | 🖥️ 通知 Dashboard | Web看板：截止倒计时/筛选排序/来源标记 | `notices.html` |
 | ⚖️ Offer 对比 | 8维对比分析 + 评分 + 建议 | `/保研 compare` |
-| 📂 成果中心 | 21个文件，7校全套材料，**按学校分组**，HTML预览，打印PDF | `results.html` |
+| 📂 成果中心 | 7校全套材料，**按学校分组**，HTML预览，打印PDF | `results.html` |
 
 ---
 
 ## 安装
 
+### Claude Code
 ```bash
 git clone https://github.com/fndhwpoff/baoyan-skill.git ~/.claude/skills/保研skill
 pip install -r ~/.claude/skills/保研skill/requirements.txt
 ```
+
+### Codex
+```bash
+git clone https://github.com/fndhwpoff/baoyan-skill.git ~/.codex/skills/保研skill
+pip install -r ~/.codex/skills/保研skill/requirements.txt
+```
+
+> Windows 用户也可以把仓库放在任意工作区；在 Codex 中打开该目录即可审阅、运行和修改。
 
 ---
 
@@ -104,7 +114,7 @@ pip install -r ~/.claude/skills/保研skill/requirements.txt
 ```
 保研skill/
 ├── SKILL.md                         # 入口文件
-├── prompts/                         # 提示词模板 (13个)
+├── prompts/                         # 提示词模板 (12个)
 │   ├── resume_translate_en.md
 │   ├── interview_questions_cn.md    # 含参考答案
 │   ├── interview_questions_en.md    # 含参考答案
@@ -113,17 +123,17 @@ pip install -r ~/.claude/skills/保研skill/requirements.txt
 │   ├── advisor_email_cn.md
 │   ├── recommendation_letter_cn.md
 │   ├── course_review.md             # 专业课复习
-│   ├── school_compare.md
 │   ├── exam_prep.md
 │   ├── notice_analysis.md
 │   ├── experience_summary.md
 │   └── school_compare.md
-├── tools/                           # Python 工具 (5个)
+├── tools/                           # Python 工具 (6个)
 │   ├── notice_scraper.py            # 通知爬虫(科研营/夏令营等关键词)
 │   ├── web_server.py                # Web服务器
 │   ├── pdf_generator.py             # MD→HTML批量转换
 │   ├── question_store.py            # 题库管理
-│   └── experience_store.py          # 面经库管理
+│   ├── experience_store.py          # 面经库管理
+│   └── feedback_worker.py           # 旧版反馈处理工具
 ├── config/schools.yaml              # 18校配置
 ├── data/
 │   ├── school_templates.json        # 7校专属邮件/PS模板

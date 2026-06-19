@@ -176,8 +176,17 @@ const QuestionLoader = (() => {
             const sessionNames = Object.keys(sessions);
 
             if (sessionNames.length > 0) {
-                // 取最新的会话
-                const latest = sessionNames.sort().reverse()[0];
+                // Prefer explicit created_at metadata; fall back to session name ordering.
+                const latest = sessionNames.sort((a, b) => {
+                    const sa = sessions[a] || {};
+                    const sb = sessions[b] || {};
+                    const ta = Date.parse(sa.created_at || "");
+                    const tb = Date.parse(sb.created_at || "");
+                    if (!Number.isNaN(ta) && !Number.isNaN(tb)) return tb - ta;
+                    if (!Number.isNaN(ta)) return -1;
+                    if (!Number.isNaN(tb)) return 1;
+                    return b.localeCompare(a);
+                })[0];
                 questions = (sessions[latest] || []);
 
                 // 如果是数组格式（直接就是questions），保持原样

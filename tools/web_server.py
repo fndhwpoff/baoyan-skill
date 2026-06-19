@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""保研skill — 本地Web服务器 v2.3
+"""保研skill — 本地Web服务器 v3.0
 
 提供:
   - 静态文件服务 (web/ 目录) + PDF 文件服务 (output/ 目录)
@@ -54,7 +54,7 @@ class Handler(SimpleHTTPRequestHandler):
             "/api/results": lambda: self.serve_results(p),
             "/api/results/content": lambda: self.serve_results_content(p),
             "/api/feedback/check": lambda: self.serve_feedback_result(p),
-            "/api/health": lambda: self.json({"status": "ok", "message": "保研skill v2.3" }),
+            "/api/health": lambda: self.json({"status": "ok", "message": "保研skill v3.0" }),
         }
         if p.path in routes:
             routes[p.path]()
@@ -87,7 +87,10 @@ class Handler(SimpleHTTPRequestHandler):
     def serve_file(self, path):
         from urllib.parse import unquote
         path = unquote(path)  # Decode URL-encoded Chinese characters
-        fp = SKILL_DIR / path.lstrip("/")
+        fp = (SKILL_DIR / path.lstrip("/")).resolve()
+        output_root = OUTPUT_DIR.resolve()
+        if not fp.is_relative_to(output_root):
+            self.send_error(403); return
         if not fp.exists():
             self.send_error(404); return
         ct = "text/html" if fp.suffix == ".html" else "application/pdf"
@@ -154,8 +157,10 @@ class Handler(SimpleHTTPRequestHandler):
             path = qs.get("path",[None])[0]
             if not path: self.json({"error":"missing path"},400); return
             path = path.replace("\\","/")
-            fp = SKILL_DIR / path
-            if not str(fp).startswith(str(OUTPUT_DIR)) and not str(fp).startswith(str(SKILL_DIR/"data")):
+            fp = (SKILL_DIR / path).resolve()
+            output_root = OUTPUT_DIR.resolve()
+            data_root = (SKILL_DIR/"data").resolve()
+            if not (fp.is_relative_to(output_root) or fp.is_relative_to(data_root)):
                 self.json({"error":"forbidden"},403); return
             if not fp.exists(): self.json({"error":"not found"},404); return
             with open(fp,"r",encoding="utf-8") as f:
@@ -359,7 +364,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 def main():
-    p=argparse.ArgumentParser(description="保研skill Web服务器 v2.3")
+    p=argparse.ArgumentParser(description="保研skill Web服务器 v3.0")
     p.add_argument("--port",type=int,default=8765)
     p.add_argument("--watch-feedback",action="store_true",help="自动启动反馈监控")
     args=p.parse_args()
@@ -371,7 +376,7 @@ def main():
         threading.Thread(target=run_worker,daemon=True).start()
     server=HTTPServer(("127.0.0.1",args.port),Handler)
     print("="*55)
-    print("  保研skill v2.3 — Web服务器")
+    print("  保研skill v3.0 — Web服务器")
     print("="*55)
     print(f"  [Home]        http://localhost:{args.port}")
     print(f"  [Practice]    http://localhost:{args.port}/practice.html")

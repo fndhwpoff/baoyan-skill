@@ -81,8 +81,9 @@ def action_save(file_path, session_name):
     questions = []
     current_q = None
 
-    for line in content.split("\n"):
-        line = line.strip()
+    lines = content.splitlines()
+    for idx, raw_line in enumerate(lines):
+        line = raw_line.strip()
 
         # 检测问题标题：### Q1. 或 ### Q1：
         if line.startswith("### Q") or line.startswith("### **Q"):
@@ -112,13 +113,13 @@ def action_save(file_path, session_name):
                 current_q["hint"] = line.split("：")[-1].split(":")[-1].strip()
             elif "追问" in line or "follow-up" in line.lower() or "Possible follow" in line:
                 pass  # follow_ups handled below
-            elif line.startswith("- ") and ("追问" in content.split("\n")[content.split("\n").index(line) - 1] if content.split("\n").index(line) > 0 else False):
+            elif line.startswith("- ") and idx > 0 and "追问" in lines[idx - 1]:
                 current_q["follow_ups"].append(line.lstrip("- ").strip())
             elif line.startswith("- "):
                 # Check if previous line contained "follow-up" context
-                prev_idx = content.split("\n").index(line) - 1 if content.split("\n").index(line) > 0 else -1
+                prev_idx = idx - 1
                 if prev_idx > 0:
-                    prev_line = content.split("\n")[prev_idx]
+                    prev_line = lines[prev_idx]
                     if "追问" in prev_line or "follow-up" in prev_line.lower() or "Possible follow" in prev_line:
                         current_q["follow_ups"].append(line.lstrip("- ").strip())
 

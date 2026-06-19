@@ -397,7 +397,6 @@ const App = (() => {
 
     function updateTimerDisplay(seconds) {
         $("#timer-count").textContent = seconds;
-        updateTimerCircle(seconds, timerSeconds > 0 ? timerSeconds : 1);
     }
 
     function updateTimerCircle(remaining, total) {
